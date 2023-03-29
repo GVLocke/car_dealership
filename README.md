@@ -9,7 +9,7 @@ Overall, this project seeks to provide an effective solution to a common problem
 
 ## Modules
 
-### User Login (Not Started)
+### User Login (In Progress)
 The owners and employees of the dealership will login to the database using a username and password to keep the system secure. Admins will have privileged access to sensitive customer information. 
 
 ### Menu (In Progress)
