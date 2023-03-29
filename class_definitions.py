@@ -111,21 +111,29 @@ class Purchase:
     """A class that represents a purchase of a car."""
     # purchase history
     purchase_history = []
-    def __init__(self, vin, customer, price, date):
-        # rework this to get the car from the inventory
-        self.__vin = vin
-        # later we will add a customer class
-        self.__customer = customer
-        # rework this to get the price from the inventory
-        self.__price = price
-        self.__date = date
-        # add the purchase to the purchase history and remove the car from the inventory
+    def __init__(self, vin, customer_id, price, date):
+        """Initializes the purchase object."""
+        # check if the inventory is empty
+        if len(Vehicle.inventory) == 0:
+            raise ValueError("Inventory is empty.")
         for vehicle in Vehicle.inventory:
-            if vehicle.get_vin() == self.__vin:
+            if vehicle.get_vin() == vin:
                 self.__vehicle_obj = vehicle
                 Purchase.purchase_history.append(self)
                 Vehicle.inventory.remove(vehicle)
                 break
+            else:
+                raise ValueError("Vehicle not found in inventory.")
+        if len(Customer.customer_list) == 0:
+            raise ValueError("Customer list is empty.")
+        for customer in Customer.customer_list:
+            if customer.get_id() == customer_id:
+                self.__customer_obj = customer
+                break
+            else:
+                raise ValueError("Customer not found in customer list.")
+        self.__price = price
+        self.__date = date
 
     def get_vin(self):
         """Returns the VIN of the car."""
@@ -162,7 +170,7 @@ class Purchase:
     def print_purchase(self):
         """Prints the details of the purchase."""
         self.__vehicle_obj.print_details()
-        print("Customer: " + self.__customer)
+        print("Customer: " + self.__customer_obj.get_name())
         print("Date: " + self.__date)
 
     @staticmethod
@@ -179,53 +187,67 @@ class Purchase:
             purchase.print_purchase()
 
 class Customer:
-  """A class that represents the customer"""
-  # list of all customers
-  customer_list = []
-  def __init__(self, name, phone, email):
-    self.__name = name
-    self.__phone = phone
-    self.__email = email
-    self.__id = str(shortuuid.uuid())
-    Customer.customer_list.append(self)
+    """A class that represents the customer"""
+    # list of all customers
+    customer_list = []
+    def __init__(self, name, phone, email):
+        self.__name = name
+        self.__phone = phone
+        self.__email = email
+        self.__id = str(shortuuid.uuid())
+        Customer.customer_list.append(self)
 
-  def set_name(self, name):
-    """Sets the name of the customer"""
-    self.__name=name
+    def set_name(self, name):
+        """Sets the name of the customer"""
+        self.__name=name
     
-  def set_phone(self, phone):
-    """Sets the phone number of cutomer"""
-    self.__phone=phone
+    def set_phone(self, phone):
+        """Sets the phone number of cutomer"""
+        self.__phone=phone
     
-  def set_email(self, email):
-    """Sets the email of the customer"""
-    self.__email=email
+    def set_email(self, email):
+        """Sets the email of the customer"""
+        self.__email=email
     
-  def set_id(self, id):
-    """Sets the id of the customer"""
-    self.__id = id
+    def set_id(self, id):
+        """Sets the id of the customer"""
+        self.__id = id
 
-  def regenerate_id(self):
-    """Generates a new id"""
-    self.__id = str(shortuuid.uuid())
+    def regenerate_id(self):
+        """Generates a new id"""
+        self.__id = str(shortuuid.uuid())
 
-  def get_name(self):
-    return self.__name
+    def get_name(self):
+        return self.__name
 
-  def get_phone(self):
-    return self.__phone
+    def get_phone(self):
+        return self.__phone
 
-  def get_email(self):
-    return self.__email
+    def get_email(self):
+        return self.__email
 
-  def get_id(self):
-    return self.__id
+    def get_id(self):
+        return self.__id
 
-  def print_details(self):
-    print(f"Name: {self.__name}")
-    print(f"ID: {self.__id}")
-    print(f"Phone: {self.__phone}")
-    print(f"Email: {self.__email}")
+    def print_details(self):
+        """Prints the details of the customer"""
+        print(f"Name: {self.__name}")
+        print(f"ID: {self.__id}")
+        print(f"Phone: {self.__phone}")
+        print(f"Email: {self.__email}")
+    
+    @staticmethod
+    def get_customer_list():
+        """Returns the list of customers"""
+        return Customer.customer_list
+    
+    @staticmethod
+    def print_customer_list():
+        """Prints the list of customers"""
+        print("Customer List".center(55, "-"))
+        print()
+        for customer in Customer.customer_list:
+            customer.print_details()
 
 class User:
   """A class that represents a user"""
