@@ -24,3 +24,5 @@ To keep the data safe and available, we need to save it permanently. That's why 
 
 ## Installation
 Dependencies: shortuuid
+
+You can install using `pip install -r requirements.txt`
