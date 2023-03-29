@@ -1,4 +1,5 @@
-"""A module that contains the Car class."""
+"""A module that contains the main class definitions."""
+import shortuuid
 
 class Vehicle:
     """A class that represents a Vehicle."""
@@ -176,3 +177,65 @@ class Purchase:
         print()
         for purchase in Purchase.purchase_history:
             purchase.print_purchase()
+
+class Customer:
+  """A class that represents the customer"""
+  # list of all customers
+  customer_list = []
+  def __init__(self, name, phone, email):
+    self.__name = name
+    self.__phone = phone
+    self.__email = email
+    self.__id = str(shortuuid.uuid())
+    Customer.customer_list.append(self)
+
+  def set_name(self, name):
+    """Sets the name of the customer"""
+    self.__name=name
+    
+  def set_phone(self, phone):
+    """Sets the phone number of cutomer"""
+    self.__phone=phone
+    
+  def set_email(self, email):
+    """Sets the email of the customer"""
+    self.__email=email
+    
+  def set_id(self, id):
+    """Sets the id of the customer"""
+    self.__id = id
+
+  def regenerate_id(self):
+    """Generates a new id"""
+    self.__id = str(shortuuid.uuid())
+
+  def get_name(self):
+    return self.__name
+
+  def get_phone(self):
+    return self.__phone
+
+  def get_email(self):
+    return self.__email
+
+  def get_id(self):
+    return self.__id
+
+  def print_details(self):
+    print(f"Name: {self.__name}")
+    print(f"ID: {self.__id}")
+    print(f"Phone: {self.__phone}")
+    print(f"Email: {self.__email}")
+
+class User:
+  """A class that represents a user"""
+  def __init__(self, name, phone, email):
+    self.__name = name
+    self.__phone = phone
+    self.__email = email
+
+  def display_user(self):
+    """Returns the credentials of the user"""
+    print("Name: ", self.__name)
+    print("Phone:", self.__phone)
+    print("Email:", self.__email)

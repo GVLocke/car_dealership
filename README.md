@@ -20,3 +20,7 @@ One of the main functions of the program will be the ability to search the entir
 
 ### Database Implementation (Not Started)
 To keep the data safe and available, we need to save it permanently. That's why we must use a reliable and secure database system to store all the information recorded by users.
+
+
+## Installation
+Dependencies: shortuuid
