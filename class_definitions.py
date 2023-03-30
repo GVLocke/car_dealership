@@ -23,13 +23,13 @@ class Vehicle:
         if len(vin) != 17:
             raise ValueError("Invalid VIN.")
         # check if the year is valid
-        if year < 1900 or year > 2020:
+        if year < 1900 or year > int(time.strftime("%Y")):
             raise ValueError("Invalid year.")
         # check if the price is valid
         if price < 0:
             raise ValueError("Invalid price.")
         # check if the transmission is valid
-        if transmission not in ["Automatic", "Manual", "CVT"]:
+        if transmission not in ["Automatic", "Manual", "CVT", "Electric", "Hybrid"]:
             raise ValueError("Invalid transmission.")
         # set the attributes
         self.__vin = vin
@@ -376,20 +376,38 @@ class Customer:
     @staticmethod
     def print_customer_list():
         """Prints the list of customers"""
-        print("Customer List".center(55, "-"))
+        print("Customer List".center(45, "-"))
         print()
         for customer in Customer.customer_list:
             customer.print_details()
 
+    @staticmethod
+    def print_numbered_customer_list_names_only():
+        """Prints the list of customers with their names and their corresponding numbers"""
+        print("Customer List".center(45, "-"))
+        print()
+        for i, customer in enumerate(Customer.customer_list):
+            print(f"{i + 1}. {customer.get_name()}")
 
 class User:
     """A class that represents a user. 
-    It has attributes name, phone, email and password."""
+    It has attributes name, phone, email and password.
+    Phone numbers should be of the format xxx-xxx-xxxx."""
 
     users = []
 
-    def __init__(self, name, phone, email, password):
+    def __init__(self, name, phone, email, password, username):
+        if username in [user.get_username() for user in User.users]:
+            raise ValueError("Username already exists.")
+        if not name.isalpha():
+            raise ValueError("Invalid name.")
+        # phone number exception handling - should be of the format xxx-xxx-xxxx
+        if len(phone) != 12 or phone[3] != "-" or phone[7] != "-":
+            raise ValueError("Invalid phone number.")
+        if email == "" or "@" not in email or "." not in email:
+            raise ValueError("Invalid email.")
         self.__name = name
+        self.__username = username
         self.__phone = phone
         self.__password = password
         self.__email = email
@@ -401,6 +419,10 @@ class User:
         print("Phone:", self.__phone)
         print("Email:", self.__email)
         print("Password:", self.__password)
+    
+    def get_username(self):
+        """Returns the username of the user"""
+        return self.__username
 
     def get_name(self):
         """Returns the name of the user"""
@@ -446,34 +468,23 @@ class User:
         print()
         for user in User.users:
             user.display_user()
-    
-    @staticmethod
-    def create_user():
-        name = input("Enter name: ")
-        phone = input("Enter phone number: ")
-        email = input("Enter email: ")
-        password_candidate = input("Enter password: ")
-        password_candidate2 = input("Re-enter password: ")
-        if password_candidate == password_candidate2:
-            password = password_candidate
-        return User(name, phone, email, password)
 
     @staticmethod
-    def authenticate_user(user):
-        password_candidate = input("Enter password: ")
-        if password_candidate == user.get_password():
-            return True
-        else:
-            return False
-
+    def authenticate_user(username, password):
+        """Authenticates the user"""
+        for user in User.users:
+            if user.get_username() == username and user.get_password() == password:
+                return True, user
+        return False
 
 
 class Admin(User):
     """A class that represents an admin. 
-    It has attributes name, phone, email, and password."""
+    It has attributes name, phone, email, and password.
+    Phone numbers should be of the format xxx-xxx-xxxx."""
     
-    def __init__(self, name, phone, email, password):
-        super().__init__(name, phone, email, password)
+    def __init__(self, name, phone, email, password, username):
+        super().__init__(name, phone, email, password, username)
     
     def remove_user(self, user):
         """Removes a user from the list of users"""
@@ -483,14 +494,35 @@ class Admin(User):
         """Changes the password of another user"""
         user.__password = password
     
-    def display_user(self):
-        """Displays the Admin credentials"""
-        super().display_user()
-    
-    def get_password(self):
-        """Returns the password of the admin"""
-        return self.__password
-    
-    def set_password(self, password):
-        """Sets the password of the admin"""
-        self.__password = password
+    @staticmethod
+    def create_user():
+        name = input("Enter name: ")
+        while 1:
+            phone_candidate = input("Enter phone number: ")
+            if len(phone_candidate) != 12 or phone_candidate[3] != "-" or phone_candidate[7] != "-":
+                print("Invalid phone number.")
+                continue
+            else:
+                phone = phone_candidate
+                break
+        while 1:
+            email_candidate = input("Enter email: ")
+            if email_candidate == "" or "@" not in email_candidate or "." not in email_candidate:
+                print("Invalid email.")
+                continue
+            else:
+                email = email_candidate
+                break
+        while 1:
+            username_candidate = input("Enter username: ")
+            if username_candidate in [user.get_username() for user in User.users]:
+                print("Username already exists.")
+                continue
+            else:
+                username = username_candidate
+                break
+        password_candidate = input("Enter password: ")
+        password_candidate2 = input("Re-enter password: ")
+        if password_candidate == password_candidate2:
+            password = password_candidate
+        return User(name, phone, email, password, username)
