@@ -311,6 +311,13 @@ class Customer:
     customer_list = []
 
     def __init__(self, name, phone, email):
+        if not name.isalpha():
+            raise ValueError("Invalid name.")
+        # phone number exception handling - should be of the format xxx-xxx-xxxx
+        if len(phone) != 12 or phone[3] != "-" or phone[7] != "-":
+            raise ValueError("Invalid phone number.")
+        if email == "" or "@" not in email or "." not in email:
+            raise ValueError("Invalid email.")
         self.__name = name
         self.__phone = phone
         self.__email = email
