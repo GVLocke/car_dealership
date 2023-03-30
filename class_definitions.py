@@ -304,6 +304,7 @@ class Purchase:
 class Customer:
     """A class that represents the customer.
     It has attributes name, phone, email and customer_id.
+    The phone number should be of the format xxx-xxx-xxxx.
     It takes the name, phone and email as arguments.
     It generates a unique customer ID for each customer using the shortuuid library.
     It adds the customer object to the customer_list, which is a list of all the customers."""
