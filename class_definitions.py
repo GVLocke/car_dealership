@@ -384,15 +384,56 @@ class Customer:
 
 class User:
     """A class that represents a user. 
-    It has attributes name, phone and email."""
+    It has attributes name, phone, email and password."""
 
-    def __init__(self, name, phone, email):
+    users = []
+
+    def __init__(self, name, phone, email, password):
         self.__name = name
         self.__phone = phone
+        self.__password = password
         self.__email = email
+        User.users.append(self)
 
     def display_user(self):
         """Returns the credentials of the user"""
         print("Name: ", self.__name)
         print("Phone:", self.__phone)
         print("Email:", self.__email)
+
+    def get_name(self):
+        """Returns the name of the user"""
+        return self.__name
+    
+    def get_phone(self):
+        """Returns the phone number of the user"""
+        return self.__phone
+    
+    def get_email(self):
+        """Returns the email of the user"""
+        return self.__email
+    
+    def set_name(self, name):
+        """Sets the name of the user"""
+        self.__name = name
+
+    def set_phone(self, phone):
+        """Sets the phone number of the user"""
+        self.__phone = phone
+
+    def set_email(self, email):
+        """Sets the email of the user"""
+        self.__email = email
+
+    @staticmethod
+    def get_users():
+        """Returns the list of users"""
+        return User.users
+    
+    @staticmethod
+    def print_users():
+        """Prints the list of users"""
+        print("User List".center(55, "-"))
+        print()
+        for user in User.users:
+            user.display_user()
