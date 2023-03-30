@@ -400,6 +400,7 @@ class User:
         print("Name: ", self.__name)
         print("Phone:", self.__phone)
         print("Email:", self.__email)
+        print("Password:", self.__password)
 
     def get_name(self):
         """Returns the name of the user"""
@@ -413,6 +414,10 @@ class User:
         """Returns the email of the user"""
         return self.__email
     
+    def get_password(self):
+        """Returns the password of the user"""
+        return self.__password
+    
     def set_name(self, name):
         """Sets the name of the user"""
         self.__name = name
@@ -424,6 +429,10 @@ class User:
     def set_email(self, email):
         """Sets the email of the user"""
         self.__email = email
+
+    def set_password(self, password):
+        """Sets the password of the user"""
+        self.__password = password
 
     @staticmethod
     def get_users():
@@ -437,3 +446,51 @@ class User:
         print()
         for user in User.users:
             user.display_user()
+    
+    @staticmethod
+    def create_user():
+        name = input("Enter name: ")
+        phone = input("Enter phone number: ")
+        email = input("Enter email: ")
+        password_candidate = input("Enter password: ")
+        password_candidate2 = input("Re-enter password: ")
+        if password_candidate == password_candidate2:
+            password = password_candidate
+        return User(name, phone, email, password)
+
+    @staticmethod
+    def authenticate_user(user):
+        password_candidate = input("Enter password: ")
+        if password_candidate == user.get_password():
+            return True
+        else:
+            return False
+
+
+
+class Admin(User):
+    """A class that represents an admin. 
+    It has attributes name, phone, email, and password."""
+    
+    def __init__(self, name, phone, email, password):
+        super().__init__(name, phone, email, password)
+    
+    def remove_user(self, user):
+        """Removes a user from the list of users"""
+        User.users.remove(user)
+    
+    def change_password(self, user, password):
+        """Changes the password of another user"""
+        user.__password = password
+    
+    def display_user(self):
+        """Displays the Admin credentials"""
+        super().display_user()
+    
+    def get_password(self):
+        """Returns the password of the admin"""
+        return self.__password
+    
+    def set_password(self, password):
+        """Sets the password of the admin"""
+        self.__password = password
