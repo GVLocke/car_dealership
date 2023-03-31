@@ -131,6 +131,17 @@ class Vehicle:
         print()
         for vehicle in Vehicle.inventory:
             vehicle.print_details()
+    
+    @staticmethod
+    def print_numbered_vehicle_list():
+        """Prints the dealership inventory with a number next to each vehicle."""
+        if len(Vehicle.inventory) == 0:
+            print("The dealership inventory is empty.")
+            return
+        print("Dealership Inventory".center(55, "-"))
+        print()
+        for i, vehicle in enumerate(Vehicle.inventory):
+            print(f"{i + 1}. {vehicle.get_year()} {vehicle.get_make()} {vehicle.get_model()}")
 
 
 class UsedVehicle(Vehicle):
@@ -384,6 +395,9 @@ class Customer:
     @staticmethod
     def print_numbered_customer_list_names_only():
         """Prints the list of customers with their names and their corresponding numbers"""
+        if len(Customer.customer_list) == 0:
+            print("No customers found.")
+            return
         print("Customer List".center(45, "-"))
         print()
         for i, customer in enumerate(Customer.customer_list):

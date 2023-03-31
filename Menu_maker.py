@@ -191,6 +191,24 @@ while 1:
                 else:
                     num_owners = int(num_owners_candidate)
                     break
+            # get condition, validate input
+            while 1:
+                condition_candidate = str(input("Condition (E for Excellent / G for Good / F for Fair / P for Poor): "))
+                if condition_candidate.upper() == "E":
+                    condition = "Excellent"
+                    break
+                elif condition_candidate.upper() == "G":
+                    condition = "Good"
+                    break
+                elif condition_candidate.upper() == "F":
+                    condition = "Fair"
+                    break
+                elif condition_candidate.upper() == "P":
+                    condition = "Poor"
+                    break
+                else:
+                    print("Invalid input. Please enter E, G, F, or P.")
+                    continue
         # get VIN, validate input
         while 1:
             vin = str(input("VIN: "))
@@ -205,7 +223,7 @@ while 1:
                 cd.Vehicle(vin, make, model, year, color, transmission, engine, price)
             else:
                 cd.UsedVehicle(vin, make, model, year, color, transmission, engine, price, mileage,
-                               title_status, num_owners)
+                               title_status, condition, num_owners)
             print("Car added to inventory.")
         except ValueError as e:
             print(e)
@@ -213,6 +231,22 @@ while 1:
     # record a sale
     elif selection == 2:
         print("Record a Sale".center(50, "-"))
+        # search for a car in the list of cars
+        # print list of cars
+        cd.Vehicle.print_numbered_vehicle_list()
+        # get car selection, validate input
+        while 1:
+            car_selection_candidate = str(input("Enter car number or enter 0 to exit: "))
+            if not car_selection_candidate.isdigit() or int(car_selection_candidate) < 0 or int(car_selection_candidate) > len(cd.Vehicle.inventory):
+                print(f"Invalid input. Please enter a number between 1 and {len(cd.Vehicle.inventory)}.")
+                continue
+            elif int(car_selection_candidate) == 0:
+                break
+            else:
+                car_selection = int(car_selection_candidate)
+                # get vin of selected car
+                vin = cd.Vehicle.inventory[car_selection - 1].get_vin()
+                break 
         # search for a customer in the list of customers
         # print list of customers
         cd.Customer.print_numbered_customer_list_names_only()
@@ -255,6 +289,8 @@ while 1:
                 try:
                     cd.Customer(name, phone_number, email)
                     print("Customer added to list.")
+                    customer_id = cd.Customer.customer_list[-1].get_id()
+                    break
                 except ValueError as e:
                     print(e)
                     break
@@ -263,3 +299,37 @@ while 1:
                 # get id of selected customer
                 customer_id = cd.Customer.customer_list[customer_selection - 1].get_id()
                 break
+        # get sale date, validate input
+        while 1:
+            sale_date_candidate = str(input("Sale Date (MM/DD/YYYY): "))
+            if len(sale_date_candidate) != 10 or sale_date_candidate[2] != "/" or sale_date_candidate[5] != "/":
+                print("Invalid input. Please enter a date in the format MM/DD/YYYY.")
+                continue
+            # check if date is valid (month must be between 1 and 12, day must be between 1 and 31, year must be between 1900 and current year)
+            # also check if day is valid for the month (e.g. 2/29/2020 is not valid)
+            elif int(sale_date_candidate[0:2]) < 1 or int(sale_date_candidate[0:2]) > 12:
+                print("Invalid input. Please enter a valid month.")
+                continue
+            elif int(sale_date_candidate[3:5]) < 1 or int(sale_date_candidate[3:5]) > 31:
+                print("Invalid input. Please enter a valid day.")
+                continue
+            elif int(sale_date_candidate[6:10]) < 1900 or int(sale_date_candidate[6:10]) > time.localtime().tm_year:
+                print("Invalid input. Please enter a valid year.")
+                continue
+            elif int(sale_date_candidate[0:2]) == 2 and int(sale_date_candidate[3:5]) > 29:
+                print("Invalid input. Please enter a valid day.")
+                continue
+            elif int(sale_date_candidate[0:2]) in [4, 6, 9, 11] and int(sale_date_candidate[3:5]) > 30:
+                print("Invalid input. Please enter a valid day.")
+                continue
+            else:
+                sale_date = sale_date_candidate
+                break
+        # try to create a new sale
+        try:
+            cd.Purchase(vin, customer_id, sale_date)
+            print("Sale recorded.")
+            continue
+        except ValueError as e:
+            print(e)
+            continue
