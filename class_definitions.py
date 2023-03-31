@@ -541,7 +541,8 @@ class Admin(User):
         """Removes a user from the list of users"""
         User.users.remove(user)
     
-    def change_password(self, user, password):
+    @staticmethod
+    def change_password(user, password):
         """Changes the password of another user"""
         user.__password = password
     
