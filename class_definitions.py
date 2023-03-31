@@ -142,6 +142,22 @@ class Vehicle:
         print()
         for i, vehicle in enumerate(Vehicle.inventory):
             print(f"{i + 1}. {vehicle.get_year()} {vehicle.get_make()} {vehicle.get_model()}")
+    
+    @staticmethod
+    def search_inventory(criteria):
+        """Searches the dealership inventory for a vehicle that matches the given criteria.
+        Returns a list of vehicles that match the criteria."""
+        matching_vehicles = []
+        if criteria == "":
+            return matching_vehicles
+        if criteria.isdigit():
+            criteria = int(criteria)
+        if str(criteria).replace(".", "", 1).isdigit():
+            criteria = float(criteria)
+        for vehicle in Vehicle.inventory:
+            if vehicle.get_make() == criteria or vehicle.get_model() == criteria or vehicle.get_year() == criteria or vehicle.get_color() == criteria or vehicle.get_transmission() == criteria or vehicle.get_engine() == criteria or vehicle.get_price() == criteria or vehicle.get_vin() == criteria:
+                matching_vehicles.append(vehicle)
+        return matching_vehicles
 
 
 class UsedVehicle(Vehicle):
@@ -311,6 +327,16 @@ class Purchase:
         for purchase in Purchase.purchase_history:
             purchase.print_purchase()
 
+    @staticmethod
+    def search_purchases(criteria):
+        """Searches for purchases based on the criteria.
+        It takes the criteria as an argument.
+        It returns a list of purchases that match the criteria."""
+        purchase_list = []
+        for purchase in Purchase.purchase_history:
+            if criteria in purchase.get_vin() or criteria in purchase.get_customer_name() or criteria in purchase.get_date() or criteria in purchase.__vehicle_obj.get_make() or criteria in purchase.__vehicle_obj.get_model() or criteria in purchase.__vehicle_obj.get_year() or criteria in purchase.__vehicle_obj.get_color() or criteria in purchase.__vehicle_obj.get_price() or criteria in purchase.__vehicle_obj.get_mileage() or criteria in purchase.__vehicle_obj.get_title() or criteria in purchase.__vehicle_obj.get_condition() or criteria in purchase.__vehicle_obj.get_num_owners() or criteria in purchase.__customer_obj.get_name() or criteria in purchase.__customer_obj.get_phone() or criteria in purchase.__customer_obj.get_email():
+                purchase_list.append(purchase)
+        return purchase_list
 
 class Customer:
     """A class that represents the customer.
@@ -402,6 +428,17 @@ class Customer:
         print()
         for i, customer in enumerate(Customer.customer_list):
             print(f"{i + 1}. {customer.get_name()}")
+
+    @staticmethod
+    def search_customer(criteria):
+        """Searches for a customer in the customer_list.
+        It takes the criteria as an argument.
+        It appends the customer object to the list if the criteria matches the name, id, phone or email of the customer."""
+        search_results = []
+        for customer in Customer.customer_list:
+            if customer.get_name() == criteria or customer.get_id() == criteria or customer.get_phone() == criteria or customer.get_email() == criteria:
+                search_results.append(customer)
+        return search_results
 
 class User:
     """A class that represents a user. 

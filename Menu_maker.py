@@ -1,47 +1,11 @@
 import time
 import class_definitions as cd
-james_admin = cd.Admin("James", "555-555-5555", "james@test.test", "jkq", "jkq")
+test_admin = cd.Admin("test", "555-555-5555", "test@test.test", "test", "test")
+toyota = cd.Vehicle("ttttttttttttttttt", "Toyota", "Camry", 2023, "Black", "Automatic", "2.5L 4-Cylinder", 20000.00)
+toyota2 = cd.Vehicle("tttttttttttt3tttt", "Toyota", "Camry", 2023, "Black", "Automatic", "2.5L 4-Cylinder", 20000.00)
+joe_customer = cd.Customer("joe", "555-555-5555", "kjoe@ntn.co")
+joe_purchase = cd.Purchase("ttttttttttttttttt", joe_customer.get_id(), "01/01/2021")
 
-
-
-# def password_unlock():
-#    password = input("Enter password: ")
-#    if password == "opensaysame": 
-#        return True
-#    else:
-#        print("Wrong password.")
-#        return False
-
-     
-# if password_unlock():
-  
-#   while (1):
-    
-#     print("option 1: Display User")
-#     print("option 2: ")
-
-#     option = input()
-
-
-
-
-
-
-#     if option == 1:
-#       N = input("Enter name: ")
-
-#       UserAndy = cd.User("Andy", "555-555-5555", "koernera@jbu.edu")
-#       if N == 'Andy' or N== 'andy':
-#         UserAndy.display_user()
-
-#       UserJames = cd.User("James", "666-666-6666", "keysj@jbu.edu")
-#       if N== 'James' or N == 'james':
-#         cd.User.display_user()
-
-#       else:
-#         print("Not a user")
-
-# login
 while 1:
     print("Welcome!".center(50, "-"))
     print("1. Login")
@@ -80,8 +44,8 @@ while 1:
     print("3. Search")
     print("4. User Settings")
     # check if current user is an admin
-    if isinstance(current_user, cd.Admin):
-        print("5. Admin Menu")
+    # if isinstance(current_user, cd.Admin):
+    #     print("5. Admin Menu")
     print("0. Exit")
     # get menu selection, validate input
     while 1:
@@ -96,7 +60,7 @@ while 1:
     if selection == 0:
         exit(0)
     # add a car to the inventory
-    if selection == 1:
+    elif selection == 1:
         print("Add a Car to the Inventory".center(50, "-"))
         # check if the car is new or used
         while 1:
@@ -225,6 +189,7 @@ while 1:
                 cd.UsedVehicle(vin, make, model, year, color, transmission, engine, price, mileage,
                                title_status, condition, num_owners)
             print("Car added to inventory.")
+            continue
         except ValueError as e:
             print(e)
             break
@@ -333,3 +298,108 @@ while 1:
         except ValueError as e:
             print(e)
             continue
+    # search
+    elif selection == 3:
+        while 1:
+            print("Search".center(50, "-"))
+            print("1. Search for a car")
+            print("2. Search for a customer")
+            print("3. Search for a Purchase")
+            print("4. Exit")
+            # get search selection, validate input
+            while 1:
+                search_selection_candidate = str(input("Enter selection: "))
+                if not search_selection_candidate.isdigit() or int(search_selection_candidate) < 1 or int(search_selection_candidate) > 4:
+                    print("Invalid input. Please enter a number between 1 and 4.")
+                    continue
+                else:
+                    search_selection = int(search_selection_candidate)
+                    break
+            # search for a car
+            if search_selection == 1:
+                print("Search for a Car".center(50, "-"))
+                search_criteria = str(input("Enter search criteria: "))
+                if len(cd.Vehicle.search_inventory(search_criteria)) == 0:
+                    print("No cars found.")
+                    continue
+                else:
+                    for car in cd.Vehicle.search_inventory(search_criteria):
+                        car.print_details()
+                    continue
+            # search for a customer
+            elif search_selection == 2:
+                print("Search for a Customer".center(50, "-"))
+                search_criteria = str(input("Enter search criteria: "))
+                if len(cd.Customer.search_customer(search_criteria)) == 0:
+                    print("No customers found.")
+                    continue
+                else:
+                    for customer in cd.Customer.search_customer(search_criteria):
+                        customer.print_purchase()
+                continue
+            # search for a purchase
+            elif search_selection == 3:
+                print("Search for a Purchase".center(50, "-"))
+                search_criteria = str(input("Enter search criteria: "))
+                if len(cd.Purchase.search_purchases(search_criteria)) == 0:
+                    print("No sales found.")
+                    continue
+                else:
+                    for sale in cd.Purchase.search_purchases(search_criteria):
+                        sale.print_purchase()
+                continue
+            # exit
+            elif search_selection == 4:
+                break
+    # user settings
+    elif selection == 4:
+        while 1:
+            print("User Settings".center(50, "-"))
+            print("1. Change password")
+            print("2. Exit")
+            # get user settings selection, validate input
+            while 1:
+                user_settings_selection_candidate = str(input("Enter selection: "))
+                if not user_settings_selection_candidate.isdigit() or int(user_settings_selection_candidate) < 1 or int(user_settings_selection_candidate) > 2:
+                    print("Invalid input. Please enter a number between 1 and 2.")
+                    continue
+                else:
+                    user_settings_selection = int(user_settings_selection_candidate)
+                    break
+            # change password
+            if user_settings_selection == 1:
+                while 1:
+                    old_password_candidate = str(input("Old Password: "))
+                    if old_password_candidate != current_user.get_password():
+                        print("Incorrect password.")
+                        continue
+                    else:
+                        old_password = old_password_candidate
+                        break
+                while 1:
+                    new_password_candidate = str(input("New Password: "))
+                    if len(new_password_candidate) < 8:
+                        print("Password must be at least 8 characters.")
+                        continue
+                    else:
+                        new_password = new_password_candidate
+                        break
+                while 1:
+                    confirm_password_candidate = str(input("Confirm Password: "))
+                    if confirm_password_candidate != new_password:
+                        print("Passwords do not match.")
+                        continue
+                    else:
+                        confirm_password = confirm_password_candidate
+                        break
+                # try to change password
+                try:
+                    current_user.set_password(new_password)
+                    print("Password changed.")
+                    break
+                except ValueError as e:
+                    print(e)
+                    break
+            # exit
+            elif user_settings_selection == 2:
+                break
