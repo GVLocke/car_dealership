@@ -25,7 +25,6 @@ while 1:
         if cd.User.authenticate_user(username, password)[0]:
             print("Login successful!")
             print("Welcome, {}!".format(username))
-            global current_user
             current_user = cd.User.authenticate_user(username, password)[1]
             break
         else:
@@ -43,9 +42,9 @@ while 1:
     print("2. Record a Sale")
     print("3. Search")
     print("4. User Settings")
-    # check if current user is an admin
-    # if isinstance(current_user, cd.Admin):
-    #     print("5. Admin Menu")
+    # check if current_user is an admin
+    if isinstance(current_user, cd.Admin):
+        print("5. Admin Menu")
     print("0. Exit")
     # get menu selection, validate input
     while 1:
@@ -405,3 +404,37 @@ while 1:
             # exit
             elif user_settings_selection == 2:
                 break
+    # admin settings
+    elif selection == 5 and isinstance(current_user, cd.Admin):
+        while 1:
+            print("Admin Settings".center(50, "-"))
+            print("1. Add a new user")
+            print("2. Remove a user")
+            print ("3. Exit")
+            # get admin settings selection, validate input
+            while 1:
+                admin_settings_selection_candidate = str(input("Enter selection: "))
+                if not admin_settings_selection_candidate.isdigit():
+                    print("Invalid input. Please enter a number between 1 and 3.")
+                    continue
+                else:
+                    admin_settings_selection = int(admin_settings_selection_candidate)
+                    break
+            # add a new user
+            if admin_settings_selection == 1:
+                print("Add a New User".center(50, "-"))
+                name = "user" + str(len(cd.User.users) + 1)
+                vars()[name] = cd.Admin.create_user()
+                print("User created.")
+            # remove a user
+            elif admin_settings_selection == 2:
+                print("Remove a User".center(50, "-"))
+                cd.User.print_numbered_list_of_usernames()
+                while 1:
+                    user_to_remove_candidate = str(input("Enter username to remove: "))
+                    if user_to_remove_candidate not in cd.User.users:
+                        print("Invalid input. Please enter a valid username.")
+                        continue
+                    else:
+                        user_to_remove = user_to_remove_candidate
+                        break

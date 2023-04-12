@@ -529,6 +529,10 @@ class User:
         """Sets the password of the user"""
         self.__password = password
 
+    def get_details_as_list(self):
+        """Returns the details of the user as a list (But not the password)"""
+        return [self.__name, self.__phone, self.__email]
+
     @staticmethod
     def get_users():
         """Returns the list of users"""
@@ -543,21 +547,38 @@ class User:
             user.display_user()
 
     @staticmethod
+    def print_numbered_list_of_usernames():
+        """Prints the list of users with their usernames and their corresponding numbers"""
+        if len(User.users) == 0:
+            print("No users found.")
+            return
+        for i, user in enumerate(User.users):
+            print(f"{i + 1}. {user.get_username()}")
+
+    @staticmethod
     def authenticate_user(username, password):
         """Authenticates the user"""
         for user in User.users:
             if user.get_username() == username and user.get_password() == password:
                 return True, user
         return False
+    
+    @staticmethod
+    def search_user(criteria):
+        """Searches for a user in the users list.
+        It takes the criteria as an argument.
+        It appends the user object to the list if the criteria matches the name, username, phone or email of the user."""
+        search_results = []
+        for user in User.users:
+            if criteria in user.get_details_as_list():
+                search_results.append(user)
+        return search_results
 
 
 class Admin(User):
     """A class that represents an admin. 
     It has attributes name, phone, email, and password.
     Phone numbers should be of the format xxx-xxx-xxxx."""
-    
-    def __init__(self, name, phone, email, password, username):
-        super().__init__(name, phone, email, password, username)
     
     def remove_user(self, user):
         """Removes a user from the list of users"""
@@ -566,15 +587,16 @@ class Admin(User):
     @staticmethod
     def change_password(user, password):
         """Changes the password of another user"""
-        user.__password = password
+        user.set_password(password)
     
     @staticmethod
     def create_user():
+        """Creates a new user"""
         name = input("Enter name: ")
         while 1:
             phone_candidate = input("Enter phone number: ")
             if len(phone_candidate) != 12 or phone_candidate[3] != "-" or phone_candidate[7] != "-":
-                print("Invalid phone number.")
+                print("Invalid phone number. Please enter in the format xxx-xxx-xxxx.")
                 continue
             else:
                 phone = phone_candidate
@@ -595,8 +617,16 @@ class Admin(User):
             else:
                 username = username_candidate
                 break
-        password_candidate = input("Enter password: ")
-        password_candidate2 = input("Re-enter password: ")
-        if password_candidate == password_candidate2:
-            password = password_candidate
+        while 1:
+            password_candidate = input("Enter password: ")
+            password_candidate_2 = input("Confirm password: ")
+            if password_candidate == "":
+                print("Password cannot be empty.")
+                continue
+            elif password_candidate != password_candidate_2:
+                print("Passwords do not match.")
+                continue
+            else:
+                password = password_candidate
+                break
         return User(name, phone, email, password, username)
