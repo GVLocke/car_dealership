@@ -211,7 +211,9 @@ while 1:
                 car_selection = int(car_selection_candidate)
                 # get vin of selected car
                 vin = cd.Vehicle.inventory[car_selection - 1].get_vin()
-                break 
+                break
+        if int(car_selection_candidate) == 0:
+            continue
         # search for a customer in the list of customers
         # print list of customers
         cd.Customer.print_numbered_customer_list_names_only()
@@ -335,7 +337,7 @@ while 1:
                     continue
                 else:
                     for customer in cd.Customer.search_customer(search_criteria):
-                        customer.print_purchase()
+                        customer.print_details()
                 continue
             # search for a purchase
             elif search_selection == 3:

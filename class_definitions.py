@@ -119,6 +119,10 @@ class Vehicle:
         print("Engine: " + self.__engine)
         print("Price: $" + str(self.__price))
 
+    def get_vehicle_details_as_list(self):
+        """Returns the details of the car as a list."""
+        return [self.__vin, self.__make, self.__model, self.__year, self.__color, self.__transmission, self.__engine, self.__price]
+
     @staticmethod
     def get_inventory():
         """Returns the dealership inventory."""
@@ -155,7 +159,7 @@ class Vehicle:
         if str(criteria).replace(".", "", 1).isdigit():
             criteria = float(criteria)
         for vehicle in Vehicle.inventory:
-            if vehicle.get_make() == criteria or vehicle.get_model() == criteria or vehicle.get_year() == criteria or vehicle.get_color() == criteria or vehicle.get_transmission() == criteria or vehicle.get_engine() == criteria or vehicle.get_price() == criteria or vehicle.get_vin() == criteria:
+           if criteria in vehicle.get_vehicle_details_as_list():
                 matching_vehicles.append(vehicle)
         return matching_vehicles
 
@@ -228,6 +232,10 @@ class UsedVehicle(Vehicle):
         print("Condition: " + self.__condition)
         print("Number of Owners: " + str(self.__num_owners))
 
+    def get_vehicle_details_as_list(self):
+        """Returns the details of the car as a list."""
+        return super().get_vehicle_details_as_list() + [self.__mileage, self.__title, self.__condition, self.__num_owners]
+
 
 class Purchase:
     """A class that represents a purchase of a car.
@@ -249,7 +257,7 @@ class Purchase:
             raise ValueError("Inventory is empty.")
         for vehicle in Vehicle.inventory:
             if vehicle.get_vin() == vin:
-                self.__vehicle_obj = vehicle
+                self.vehicle_obj = vehicle
                 break
             else:
                 raise ValueError("Vehicle not found in inventory.")
@@ -257,7 +265,7 @@ class Purchase:
             raise ValueError("Customer list is empty.")
         for customer in Customer.customer_list:
             if customer.get_id() == customer_id:
-                self.__customer_obj = customer
+                self.customer_obj = customer
                 break
             else:
                 raise ValueError("Customer not found in customer list.")
@@ -278,19 +286,19 @@ class Purchase:
             raise ValueError("Invalid date.")
         self.__date = date
         Purchase.purchase_history.append(self)
-        Vehicle.inventory.remove(self.__vehicle_obj)
+        Vehicle.inventory.remove(self.vehicle_obj)
 
     def get_vin(self):
         """Returns the VIN of the car."""
-        return self.__vehicle_obj.get_vin()
+        return self.vehicle_obj.get_vin()
 
     def get_customer(self):
         """Returns the customer who purchased the car."""
-        return self.__customer_obj
+        return self.customer_obj
 
     def get_customer_name(self):
         """Returns the name of the customer who purchased the car."""
-        return self.__customer_obj.get_name()
+        return self.customer_obj.get_name()
 
     def get_date(self):
         """Returns the date of the purchase."""
@@ -298,11 +306,11 @@ class Purchase:
 
     def set_car(self, car):
         """Sets the car that was purchased."""
-        self.__vehicle_obj = car
+        self.vehicle_obj = car
 
     def set_customer(self, customer):
         """Sets the customer who purchased the car."""
-        self.__customer_obj = customer
+        self.customer_obj = customer
 
     def set_date(self, date):
         """Sets the date of the purchase."""
@@ -310,9 +318,13 @@ class Purchase:
 
     def print_purchase(self):
         """Prints the details of the purchase."""
-        self.__vehicle_obj.print_details()
-        print("Customer: " + self.__customer_obj.get_name())
+        self.vehicle_obj.print_details()
+        print("Customer: " + self.customer_obj.get_name())
         print("Date: " + self.__date)
+
+    def get_purchase_details_as_list(self):
+        """Returns the details of the purchase as a list."""
+        return self.vehicle_obj.get_vehicle_details_as_list() + [self.customer_obj.get_name(), self.__date]
 
     @staticmethod
     def get_purchase_history():
@@ -332,11 +344,17 @@ class Purchase:
         """Searches for purchases based on the criteria.
         It takes the criteria as an argument.
         It returns a list of purchases that match the criteria."""
-        purchase_list = []
+        matching_purchases = []
+        if criteria == "":
+            return matching_purchases
+        if criteria.isdigit():
+            criteria = int(criteria)
+        if str(criteria).replace(".", "", 1).isdigit():
+            criteria = float(criteria)
         for purchase in Purchase.purchase_history:
-            if criteria in purchase.get_vin() or criteria in purchase.get_customer_name() or criteria in purchase.get_date() or criteria in purchase.__vehicle_obj.get_make() or criteria in purchase.__vehicle_obj.get_model() or criteria in purchase.__vehicle_obj.get_year() or criteria in purchase.__vehicle_obj.get_color() or criteria in purchase.__vehicle_obj.get_price() or criteria in purchase.__vehicle_obj.get_mileage() or criteria in purchase.__vehicle_obj.get_title() or criteria in purchase.__vehicle_obj.get_condition() or criteria in purchase.__vehicle_obj.get_num_owners() or criteria in purchase.__customer_obj.get_name() or criteria in purchase.__customer_obj.get_phone() or criteria in purchase.__customer_obj.get_email():
-                purchase_list.append(purchase)
-        return purchase_list
+            if criteria in purchase.get_purchase_details_as_list():
+                matching_purchases.append(purchase)
+        return matching_purchases
 
 class Customer:
     """A class that represents the customer.
@@ -405,6 +423,10 @@ class Customer:
         print(f"Phone: {self.__phone}")
         print(f"Email: {self.__email}")
 
+    def get_details_as_list(self):
+        """Returns the details of the customer as a list"""
+        return [self.__name, self.__customer_id, self.__phone, self.__email]
+
     @staticmethod
     def get_customer_list():
         """Returns the list of customers"""
@@ -436,7 +458,7 @@ class Customer:
         It appends the customer object to the list if the criteria matches the name, id, phone or email of the customer."""
         search_results = []
         for customer in Customer.customer_list:
-            if customer.get_name() == criteria or customer.get_id() == criteria or customer.get_phone() == criteria or customer.get_email() == criteria:
+            if criteria in customer.get_details_as_list():
                 search_results.append(customer)
         return search_results
 
