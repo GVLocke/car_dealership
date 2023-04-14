@@ -546,14 +546,6 @@ class User:
         for user in User.users:
             user.display_user()
 
-    @staticmethod
-    def print_numbered_list_of_usernames():
-        """Prints the list of users with their usernames and their corresponding numbers"""
-        if len(User.users) == 0:
-            print("No users found.")
-            return
-        for i, user in enumerate(User.users):
-            print(f"{i + 1}. {user.get_username()}")
 
     @staticmethod
     def authenticate_user(username, password):

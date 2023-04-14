@@ -429,12 +429,33 @@ while 1:
             # remove a user
             elif admin_settings_selection == 2:
                 print("Remove a User".center(50, "-"))
-                cd.User.print_numbered_list_of_usernames()
+                if len(cd.User.users) == 0 or len(cd.User.users) == 1 and cd.User.users[0] == current_user:
+                    print("No users found.")
+                    continue
+                for i, user in enumerate(cd.User.users):
+                    if not user == current_user:
+                        print(f"{i + 1}. {user.get_username()}")
                 while 1:
-                    user_to_remove_candidate = str(input("Enter username to remove: "))
+                    user_to_remove_candidate = str(input("Enter username to remove or type 0 to exit: "))
                     if user_to_remove_candidate not in cd.User.users:
                         print("Invalid input. Please enter a valid username.")
                         continue
+                    elif user_to_remove_candidate == "0":
+                        break
                     else:
                         user_to_remove = user_to_remove_candidate
                         break
+                # try to remove user
+                try:
+                    cd.User.remove_user(user_to_remove)
+                    print("User removed.")
+                    continue
+                except ValueError as e:
+                    print(e)
+                    continue
+            # exit
+            elif admin_settings_selection == 3:
+                break
+    else:
+        print("Invalid input. Please enter a number between 1 and 5.")
+        continue
