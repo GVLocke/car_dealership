@@ -12,7 +12,7 @@ Overall, this project seeks to provide an effective solution to a common problem
 ### User Login *(Status: Done)*
 The owners and employees of the dealership will login to the database using a username and password to keep the system secure. Admins will have privileged access to sensitive customer information. 
 
-### Menu *(Status: In Progress)*
+### Menu *(Status: Done)*
 The main menu will allow users to access the functions of the program. The program will be a command-line interface.
 
 ### Search *(Status: Done)*
