@@ -1,10 +1,27 @@
 import time
 import class_definitions as cd
+import pickle
+import functions as fn
 test_admin = cd.Admin("test", "555-555-5555", "test@test.test", "test", "test")
 toyota = cd.Vehicle("ttttttttttttttttt", "Toyota", "Camry", 2023, "Black", "Automatic", "2.5L 4-Cylinder", 20000.00)
 toyota2 = cd.Vehicle("tttttttttttt3tttt", "Toyota", "Camry", 2023, "Black", "Automatic", "2.5L 4-Cylinder", 20000.00)
 joe_customer = cd.Customer("joe", "555-555-5555", "kjoe@ntn.co")
 joe_purchase = cd.Purchase("ttttttttttttttttt", joe_customer.get_id(), "01/01/2021")
+with open("dealership.dat", "rb") as f:
+    # load all objects from the file into a list
+    data = []
+    while True:
+        try:
+            data.append(pickle.load(f))
+        except EOFError:
+            break
+
+# create a list of users
+users = []
+for obj in data:
+    if isinstance(obj, cd.User) or isinstance(obj, cd.Admin):
+        users.append(obj)
+
 
 while 1:
     print("Welcome!".center(50, "-"))
@@ -22,10 +39,10 @@ while 1:
         print("Login".center(50, "-"))
         username = input("Username: ")
         password = input("Password: ")
-        if cd.User.authenticate_user(username, password)[0]:
+        if fn.authenticate_user(username, password, users)[0]:
             print("Login successful!")
             print("Welcome, {}!".format(username))
-            current_user = cd.User.authenticate_user(username, password)[1]
+            current_user = fn.authenticate_user(username, password, users)[1]
             break
         else:
             print("Invalid username or password.")
@@ -429,25 +446,36 @@ while 1:
             # remove a user
             elif admin_settings_selection == 2:
                 print("Remove a User".center(50, "-"))
-                if len(cd.User.users) == 0 or len(cd.User.users) == 1 and cd.User.users[0] == current_user:
+                if len(users) == 0 or len(users) == 1 and users[0] == current_user:
                     print("No users found.")
                     continue
-                for i, user in enumerate(cd.User.users):
+                for i, user in enumerate(users):
                     if not user == current_user:
-                        print(f"{i + 1}. {user.get_username()}")
+                        print(f"{user.get_username()}")
                 while 1:
                     user_to_remove_candidate = str(input("Enter username to remove or type 0 to exit: "))
-                    if user_to_remove_candidate not in cd.User.users:
-                        print("Invalid input. Please enter a valid username.")
-                        continue
-                    elif user_to_remove_candidate == "0":
+                    # if user_to_remove_candidate not in users:
+                    #     print("Invalid input. Please enter a valid username.")
+                    #     continue
+                    # elif user_to_remove_candidate == "0":
+                    #     break
+                    # else:
+                    #     user_to_remove = user_to_remove_candidate
+                    #     break
+                    if user_to_remove_candidate == "0":
                         break
                     else:
-                        user_to_remove = user_to_remove_candidate
+                        for user in users:
+                            if user.get_username() == user_to_remove_candidate:
+                                user_to_remove = user
+                                break
+                        else:
+                            print("Invalid input. Please enter a valid username.")
+                            continue
                         break
                 # try to remove user
                 try:
-                    cd.User.remove_user(user_to_remove)
+                    fn.remove_object("dealership.dat", user_to_remove)
                     print("User removed.")
                     continue
                 except ValueError as e:

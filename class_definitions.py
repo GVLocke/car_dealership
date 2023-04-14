@@ -553,7 +553,7 @@ class User:
         for user in User.users:
             if user.get_username() == username and user.get_password() == password:
                 return True, user
-        return False
+        return False, None
     
     @staticmethod
     def search_user(criteria):
@@ -571,10 +571,6 @@ class Admin(User):
     """A class that represents an admin. 
     It has attributes name, phone, email, and password.
     Phone numbers should be of the format xxx-xxx-xxxx."""
-    
-    def remove_user(self, user):
-        """Removes a user from the list of users"""
-        User.users.remove(user)
     
     @staticmethod
     def change_password(user, password):
