@@ -8,7 +8,8 @@ def connect_to_mongo():
     try:
         with open('server_url.txt', 'r') as file:
             url = file.read()
-        if url == "# Replace this line with the server url.":
+        # check if the url is a valid mongodb url
+        if not url.startswith('mongodb://') and not url.startswith('mongodb+srv://'):
                 raise Exception("Please enter the server url in the server_url.txt file with the MongoDB Server URL.")
     except FileNotFoundError:
         raise Exception("Please create a server_url.txt file with the MongoDB Server URL.")
