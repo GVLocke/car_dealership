@@ -4,10 +4,14 @@ from class_definitions import User, Vehicle, UsedVehicle, Customer, Purchase, Ad
 
 def connect_to_mongo():
     """Connects to the MongoDB database"""
-    with open('server_url.txt', 'r') as file:
-        url = file.read()
-    if url == "# Replace this line with the server url.":
-            raise Exception("Please enter the server url in the server_url.txt file with the MongoDB Server URL.")
+    # try-except block to check if the server url exists
+    try:
+        with open('server_url.txt', 'r') as file:
+            url = file.read()
+        if url == "# Replace this line with the server url.":
+                raise Exception("Please enter the server url in the server_url.txt file with the MongoDB Server URL.")
+    except FileNotFoundError:
+        raise Exception("Please create a server_url.txt file with the MongoDB Server URL.")
     client = MongoClient(url)
     db = client['car-dealership']
     return db
