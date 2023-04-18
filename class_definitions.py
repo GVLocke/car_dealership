@@ -4,19 +4,18 @@ import time
 class Vehicle:
     """A class that represents a Vehicle.
     It contains the following attributes: VIN, make, model, year, color,
-    transmission, engine, and price. It also contains a class attribute
-    that represents the dealership inventory, which is a list of all the vehicle objects.
+    transmission, engine, and price.
     The VIN must be 17 characters long and correspond to the VIN of a vehicle in the inventory. 
     The year must be between 1900 and 2020. The price must be greater than or equal to 0. 
     The transmission must be one of the following: Automatic, Manual, or CVT."""
-    # dealership inventory
-    inventory = []
+    # # dealership inventory
+    # inventory = []
 
     def __init__(self, vin, make, model, year, color, transmission, engine, price):
-        # check if a vehicle with the same VIN already exists
-        for vehicle in Vehicle.inventory:
-            if vehicle.get_vin() == vin:
-                raise ValueError("Vehicle with same VIN already exists.")
+        # check if a vehicle with the same VIN already exists (do this in the menu maker instead)
+        # for vehicle in Vehicle.inventory:
+        #     if vehicle.get_vin() == vin:
+        #         raise ValueError("Vehicle with same VIN already exists.")
         # check if the VIN is valid
         if len(vin) != 17:
             raise ValueError("Invalid VIN.")
@@ -38,8 +37,6 @@ class Vehicle:
         self.__transmission = transmission
         self.__engine = engine
         self.__price = price
-        # add the car to the inventory
-        Vehicle.inventory.append(self)
 
     def get_vin(self):
         """Returns the VIN of the car."""
@@ -121,45 +118,22 @@ class Vehicle:
         """Returns the details of the car as a list."""
         return [self.__vin, self.__make, self.__model, self.__year, self.__color, self.__transmission, self.__engine, self.__price]
 
-    @staticmethod
-    def get_inventory():
-        """Returns the dealership inventory."""
-        return Vehicle.inventory
-
-    @staticmethod
-    def print_inventory():
-        """Prints the dealership inventory."""
-        print("Dealership Inventory".center(55, "-"))
-        print()
-        for vehicle in Vehicle.inventory:
-            vehicle.print_details()
     
-    @staticmethod
-    def print_numbered_vehicle_list():
-        """Prints the dealership inventory with a number next to each vehicle."""
-        if len(Vehicle.inventory) == 0:
-            print("The dealership inventory is empty.")
-            return
-        print("Dealership Inventory".center(55, "-"))
-        print()
-        for i, vehicle in enumerate(Vehicle.inventory):
-            print(f"{i + 1}. {vehicle.get_year()} {vehicle.get_make()} {vehicle.get_model()}")
-    
-    @staticmethod
-    def search_inventory(criteria):
-        """Searches the dealership inventory for a vehicle that matches the given criteria.
-        Returns a list of vehicles that match the criteria."""
-        matching_vehicles = []
-        if criteria == "":
-            return matching_vehicles
-        if criteria.isdigit():
-            criteria = int(criteria)
-        if str(criteria).replace(".", "", 1).isdigit():
-            criteria = float(criteria)
-        for vehicle in Vehicle.inventory:
-           if criteria in vehicle.get_vehicle_details_as_list():
-                matching_vehicles.append(vehicle)
-        return matching_vehicles
+    # @staticmethod
+    # def search_inventory(criteria):
+    #     """Searches the dealership inventory for a vehicle that matches the given criteria.
+    #     Returns a list of vehicles that match the criteria."""
+    #     matching_vehicles = []
+    #     if criteria == "":
+    #         return matching_vehicles
+    #     if criteria.isdigit():
+    #         criteria = int(criteria)
+    #     if str(criteria).replace(".", "", 1).isdigit():
+    #         criteria = float(criteria)
+    #     for vehicle in Vehicle.inventory:
+    #        if criteria in vehicle.get_vehicle_details_as_list():
+    #             matching_vehicles.append(vehicle)
+    #     return matching_vehicles
 
 
 class UsedVehicle(Vehicle):
@@ -237,36 +211,17 @@ class UsedVehicle(Vehicle):
 
 class Purchase:
     """A class that represents a purchase of a car.
-    It has attributes vehicle_obj, customer_obj, date and purchase_history.
-    The purchase_history is a list of all the sales by the dealership.
+    It has attributes vehicle_obj, customer_obj and date.
     It takes the VIN of the car, the customer ID and the date of the purchase as arguments.
     It raises a ValueError if the inventory is empty or the vehicle is not found in the inventory.
     It raises a ValueError if the customer list is empty or the customer is not found in the customer list.
     It raises a ValueError if the date is not of the format mm/dd/yyyy and is not a valid date.
-    If all of the arguments are valid, it assigns vehicle_obj and customer_obj to the corresponding objects.
-    It also adds the purchase object to the purchase_history list."""
-    # purchase history
-    purchase_history = []
+    If all of the arguments are valid, it assigns vehicle_obj and customer_obj to the corresponding objects."""
 
     def __init__(self, vin, customer_id, date):
         """Initializes the purchase object."""
-        # check if the inventory is empty
-        if len(Vehicle.inventory) == 0:
-            raise ValueError("Inventory is empty.")
-        for vehicle in Vehicle.inventory:
-            if vehicle.get_vin() == vin:
-                self.vehicle_obj = vehicle
-                break
-            else:
-                raise ValueError("Vehicle not found in inventory.")
-        if len(Customer.customer_list) == 0:
-            raise ValueError("Customer list is empty.")
-        for customer in Customer.customer_list:
-            if customer.get_id() == customer_id:
-                self.customer_obj = customer
-                break
-            else:
-                raise ValueError("Customer not found in customer list.")
+        self.__vin = vin
+        self.__customer_id = customer_id
         # date exception handling. Should be of the format mm/dd/yyyy
         if len(date) != 10:
             raise ValueError("Invalid date.")
@@ -283,32 +238,26 @@ class Purchase:
         if int(date[6:]) > time.localtime().tm_year:
             raise ValueError("Invalid date.")
         self.__date = date
-        Purchase.purchase_history.append(self)
-        Vehicle.inventory.remove(self.vehicle_obj)
 
     def get_vin(self):
         """Returns the VIN of the car."""
-        return self.vehicle_obj.get_vin()
-
-    def get_customer(self):
-        """Returns the customer who purchased the car."""
-        return self.customer_obj
-
-    def get_customer_name(self):
-        """Returns the name of the customer who purchased the car."""
-        return self.customer_obj.get_name()
+        return self.__vin
+    
+    def set_vin(self, vin):
+        """Sets the VIN of the car."""
+        self.__vin = vin
+    
+    def get_customer_id(self):
+        """Returns the customer ID."""
+        return self.__customer_id
+    
+    def set_customer_id(self, customer_id):
+        """Sets the customer ID."""
+        self.__customer_id = customer_id
 
     def get_date(self):
         """Returns the date of the purchase."""
         return self.__date
-
-    def set_car(self, car):
-        """Sets the car that was purchased."""
-        self.vehicle_obj = car
-
-    def set_customer(self, customer):
-        """Sets the customer who purchased the car."""
-        self.customer_obj = customer
 
     def set_date(self, date):
         """Sets the date of the purchase."""
@@ -383,14 +332,6 @@ class Customer:
     def set_email(self, email):
         """Sets the email of the customer"""
         self.__email = email
-
-    def set_id(self, customer_id):
-        """Sets the id of the customer"""
-        self.__customer_id = customer_id
-
-    def regenerate_id(self):
-        """Generates a new id"""
-        self.__customer_id = str(shortuuid.uuid())
 
     def get_name(self):
         """Returns the name of the customer as a string"""

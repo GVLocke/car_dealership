@@ -174,15 +174,22 @@ while 1:
             if len(vin) != 17:
                 print("Invalid input. Please enter a 17-character VIN.")
                 continue
+            elif not vin.isalnum():
+                print("Invalid input. Please enter a 17-character VIN.")
+                continue
+            elif fn.check_vin(vin):
+                print("VIN already exists.")
+                continue
             else:
                 break
         # attempt to add car to inventory
         try:
             if new_or_used == "New":
-                cd.Vehicle(vin, make, model, year, color, transmission, engine, price)
+                car = cd.Vehicle(vin, make, model, year, color, transmission, engine, price)
             else:
-                cd.UsedVehicle(vin, make, model, year, color, transmission, engine, price, mileage,
+                car = cd.UsedVehicle(vin, make, model, year, color, transmission, engine, price, mileage,
                                title_status, condition, num_owners)
+            fn.insert_object(car)
             print("Car added to inventory.")
             continue
         except ValueError as e:
@@ -193,30 +200,36 @@ while 1:
         print("Record a Sale".center(50, "-"))
         # search for a car in the list of cars
         # print list of cars
-        cd.Vehicle.print_numbered_vehicle_list()
+        fn.print_numbered_vehicle_list()
+        inventory = fn.get_inventory()
+        if len(inventory) == 0:
+            continue
         # get car selection, validate input
         while 1:
             car_selection_candidate = str(input("Enter car number or enter 0 to exit: "))
-            if not car_selection_candidate.isdigit() or int(car_selection_candidate) < 0 or int(car_selection_candidate) > len(cd.Vehicle.inventory):
-                print(f"Invalid input. Please enter a number between 1 and {len(cd.Vehicle.inventory)}.")
+            if not car_selection_candidate.isdigit() or int(car_selection_candidate) < 0 or int(car_selection_candidate) > len(inventory):
+                print(f"Invalid input. Please enter a number between 1 and {len(inventory)}.")
                 continue
             elif int(car_selection_candidate) == 0:
                 break
             else:
                 car_selection = int(car_selection_candidate)
                 # get vin of selected car
-                vin = cd.Vehicle.inventory[car_selection - 1].get_vin()
+                vin = inventory[car_selection - 1].get_vin()
                 break
         if int(car_selection_candidate) == 0:
             continue
         # search for a customer in the list of customers
         # print list of customers
-        cd.Customer.print_numbered_customer_list_names_only()
+        customer_list = fn.get_customer_list()
+        if len(customer_list) == 0:
+            continue
+        fn.print_numbered_customer_list()
         # get customer selection, validate input
         while 1:
             customer_selection_candidate = str(input("Enter customer number or enter 0 to add a new customer: "))
-            if not customer_selection_candidate.isdigit() or int(customer_selection_candidate) < 0 or int(customer_selection_candidate) > len(cd.Customer.customer_list):
-                print(f"Invalid input. Please enter a number between 1 and {len(cd.Customer.customer_list)}.")
+            if not customer_selection_candidate.isdigit() or int(customer_selection_candidate) < 0 or int(customer_selection_candidate) > len(customer_list):
+                print(f"Invalid input. Please enter a number between 1 and {len(customer_list)}.")
                 continue
             elif int(customer_selection_candidate) == 0:
                 # create a new customer
@@ -249,17 +262,20 @@ while 1:
                         break
                 # try to create a new customer
                 try:
-                    cd.Customer(name, phone_number, email)
+                    customer = cd.Customer(name, phone_number, email)
+                    fn.insert_object(customer)
                     print("Customer added to list.")
-                    customer_id = cd.Customer.customer_list[-1].get_id()
+                    customer_id = fn.get_customer_id(name, phone_number, email)
                     break
                 except ValueError as e:
                     print(e)
                     break
             else:
                 customer_selection = int(customer_selection_candidate)
-                # get id of selected customer
-                customer_id = cd.Customer.customer_list[customer_selection - 1].get_id()
+                customer_name = customer_list[customer_selection - 1].get_name()
+                customer_phone_number = customer_list[customer_selection - 1].get_phone()
+                customer_email = customer_list[customer_selection - 1].get_email()
+                customer_id = fn.get_customer_id(customer_name, customer_phone_number, customer_email)
                 break
         # get sale date, validate input
         while 1:
@@ -287,9 +303,29 @@ while 1:
             else:
                 sale_date = sale_date_candidate
                 break
+        # get the details of the car from the vin
+        for car in inventory:
+            if car.get_vin() == vin:
+                # create a dict of the car details
+                car_details = {
+                    "make": car.get_make(), 
+                    "model": car.get_model(), 
+                    "year": car.get_year(), 
+                    "color": car.get_color(),
+                    "transmission": car.get_transmission(),
+                    "engine": car.get_engine(),
+                    "price": car.get_price()
+                }
+                if isinstance(car, cd.UsedVehicle):
+                    car_details["mileage"] = car.get_mileage()
+                    car_details["title"] = car.get_title()
+                    car_details["condition"] = car.get_condition()
+                    car_details["num_owners"] = car.get_num_owners()
+                break
         # try to create a new sale
         try:
-            cd.Purchase(vin, customer_id, sale_date)
+            purchase = cd.Purchase(vin, customer_id, sale_date)
+            fn.insert_object(purchase, car_details)
             print("Sale recorded.")
             continue
         except ValueError as e:
