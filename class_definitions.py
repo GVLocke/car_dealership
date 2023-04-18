@@ -1,7 +1,5 @@
 """A module that contains the main class definitions."""
 import time
-import shortuuid
-
 
 class Vehicle:
     """A class that represents a Vehicle.
@@ -360,11 +358,7 @@ class Customer:
     """A class that represents the customer.
     It has attributes name, phone, email and customer_id.
     The phone number should be of the format xxx-xxx-xxxx.
-    It takes the name, phone and email as arguments.
-    It generates a unique customer ID for each customer using the shortuuid library.
-    It adds the customer object to the customer_list, which is a list of all the customers."""
-    # list of all customers
-    customer_list = []
+    It takes the name, phone and email as arguments."""
 
     def __init__(self, name, phone, email):
         if not name.isalpha():
@@ -377,8 +371,6 @@ class Customer:
         self.__name = name
         self.__phone = phone
         self.__email = email
-        self.__customer_id = str(shortuuid.uuid())
-        Customer.customer_list.append(self)
 
     def set_name(self, name):
         """Sets the name of the customer"""
@@ -412,33 +404,29 @@ class Customer:
         """Returns the email of the customer as string"""
         return self.__email
 
-    def get_id(self):
-        """Returns the id of the customer as a string"""
-        return self.__customer_id
-
-    def print_details(self):
+    def print_details(self): # needs to be fixed
         """Prints the details of the customer"""
         print(f"Name: {self.__name}")
         print(f"ID: {self.__customer_id}")
         print(f"Phone: {self.__phone}")
         print(f"Email: {self.__email}")
 
-    def get_details_as_list(self):
+    def get_details_as_list(self): # needs to be fixed
         """Returns the details of the customer as a list"""
         return [self.__name, self.__customer_id, self.__phone, self.__email]
 
-    @staticmethod
-    def get_customer_list():
-        """Returns the list of customers"""
-        return Customer.customer_list
+    # @staticmethod
+    # def get_customer_list():
+    #     """Returns the list of customers"""
+    #     return Customer.customer_list
 
-    @staticmethod
-    def print_customer_list():
-        """Prints the list of customers"""
-        print("Customer List".center(45, "-"))
-        print()
-        for customer in Customer.customer_list:
-            customer.print_details()
+    # @staticmethod
+    # def print_customer_list():
+    #     """Prints the list of customers"""
+    #     print("Customer List".center(45, "-"))
+    #     print()
+    #     for customer in Customer.customer_list:
+    #         customer.print_details()
 
     @staticmethod
     def print_numbered_customer_list_names_only():
@@ -467,11 +455,7 @@ class User:
     It has attributes name, phone, email and password.
     Phone numbers should be of the format xxx-xxx-xxxx."""
 
-    users = []
-
     def __init__(self, name, phone, email, password, username):
-        if username in [user.get_username() for user in User.users]:
-            raise ValueError("Username already exists.")
         if not name.isalpha():
             raise ValueError("Invalid name.")
         # phone number exception handling - should be of the format xxx-xxx-xxxx
@@ -484,7 +468,6 @@ class User:
         self.__phone = phone
         self.__password = password
         self.__email = email
-        User.users.append(self)
 
     def display_user(self):
         """Returns the credentials of the user"""
@@ -533,38 +516,19 @@ class User:
         """Returns the details of the user as a list (But not the password)"""
         return [self.__name, self.__phone, self.__email]
 
-    @staticmethod
-    def get_users():
-        """Returns the list of users"""
-        return User.users
     
-    @staticmethod
-    def print_users():
-        """Prints the list of users"""
-        print("User List".center(55, "-"))
-        print()
-        for user in User.users:
-            user.display_user()
 
-
-    @staticmethod
-    def authenticate_user(username, password):
-        """Authenticates the user"""
-        for user in User.users:
-            if user.get_username() == username and user.get_password() == password:
-                return True, user
-        return False, None
-    
-    @staticmethod
-    def search_user(criteria):
-        """Searches for a user in the users list.
-        It takes the criteria as an argument.
-        It appends the user object to the list if the criteria matches the name, username, phone or email of the user."""
-        search_results = []
-        for user in User.users:
-            if criteria in user.get_details_as_list():
-                search_results.append(user)
-        return search_results
+    # needs to be fixed
+    # @staticmethod
+    # def search_user(criteria):
+    #     """Searches for a user in the users list.
+    #     It takes the criteria as an argument.
+    #     It appends the user object to the list if the criteria matches the name, username, phone or email of the user."""
+    #     search_results = []
+    #     for user in User.users:
+    #         if criteria in user.get_details_as_list():
+    #             search_results.append(user)
+    #     return search_results
 
 
 class Admin(User):

@@ -1,27 +1,6 @@
 import time
 import class_definitions as cd
-import pickle
 import functions as fn
-test_admin = cd.Admin("test", "555-555-5555", "test@test.test", "test", "test")
-toyota = cd.Vehicle("ttttttttttttttttt", "Toyota", "Camry", 2023, "Black", "Automatic", "2.5L 4-Cylinder", 20000.00)
-toyota2 = cd.Vehicle("tttttttttttt3tttt", "Toyota", "Camry", 2023, "Black", "Automatic", "2.5L 4-Cylinder", 20000.00)
-joe_customer = cd.Customer("joe", "555-555-5555", "kjoe@ntn.co")
-joe_purchase = cd.Purchase("ttttttttttttttttt", joe_customer.get_id(), "01/01/2021")
-with open("dealership.dat", "rb") as f:
-    # load all objects from the file into a list
-    data = []
-    while True:
-        try:
-            data.append(pickle.load(f))
-        except EOFError:
-            break
-
-# create a list of users
-users = []
-for obj in data:
-    if isinstance(obj, cd.User) or isinstance(obj, cd.Admin):
-        users.append(obj)
-
 
 while 1:
     print("Welcome!".center(50, "-"))
@@ -39,10 +18,10 @@ while 1:
         print("Login".center(50, "-"))
         username = input("Username: ")
         password = input("Password: ")
-        if fn.authenticate_user(username, password, users)[0]:
+        if fn.authenticate_user(username, password)[0]:
             print("Login successful!")
             print("Welcome, {}!".format(username))
-            current_user = fn.authenticate_user(username, password, users)[1]
+            current_user = fn.authenticate_user(username, password)[1]
             break
         else:
             print("Invalid username or password.")
