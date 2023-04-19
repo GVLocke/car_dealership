@@ -1,1 +1,1 @@
-shortuuid==1.0.11
+pymongo==4.3.3

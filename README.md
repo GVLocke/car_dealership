@@ -18,7 +18,7 @@ The main menu will allow users to access the functions of the program. The progr
 ### Search *(Status: Done)*
 One of the main functions of the program will be the ability to search the entire database based on particular filters like make/model/year, price range, etc. They will be able to search their current inventory as well as the sales history.
 
-### Database Implementation *(Status: In Progress)*
+### Database Implementation *(Status: Done)*
 To keep the data safe and available, we need to save it permanently. That's why we must use a reliable and secure database system to store all the information recorded by users.
 
 
