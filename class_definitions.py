@@ -8,15 +8,8 @@ class Vehicle:
     The VIN must be 17 characters long and correspond to the VIN of a vehicle in the inventory. 
     The year must be between 1900 and 2020. The price must be greater than or equal to 0. 
     The transmission must be one of the following: Automatic, Manual, or CVT."""
-    # # dealership inventory
-    # inventory = []
 
     def __init__(self, vin, make, model, year, color, transmission, engine, price):
-        # check if a vehicle with the same VIN already exists (do this in the menu maker instead)
-        # for vehicle in Vehicle.inventory:
-        #     if vehicle.get_vin() == vin:
-        #         raise ValueError("Vehicle with same VIN already exists.")
-        # check if the VIN is valid
         if len(vin) != 17:
             raise ValueError("Invalid VIN.")
         # check if the year is valid
@@ -114,27 +107,6 @@ class Vehicle:
         print("Engine: " + self.__engine)
         print("Price: $" + str(self.__price))
 
-    def get_vehicle_details_as_list(self):
-        """Returns the details of the car as a list."""
-        return [self.__vin, self.__make, self.__model, self.__year, self.__color, self.__transmission, self.__engine, self.__price]
-
-    
-    # @staticmethod
-    # def search_inventory(criteria):
-    #     """Searches the dealership inventory for a vehicle that matches the given criteria.
-    #     Returns a list of vehicles that match the criteria."""
-    #     matching_vehicles = []
-    #     if criteria == "":
-    #         return matching_vehicles
-    #     if criteria.isdigit():
-    #         criteria = int(criteria)
-    #     if str(criteria).replace(".", "", 1).isdigit():
-    #         criteria = float(criteria)
-    #     for vehicle in Vehicle.inventory:
-    #        if criteria in vehicle.get_vehicle_details_as_list():
-    #             matching_vehicles.append(vehicle)
-    #     return matching_vehicles
-
 
 class UsedVehicle(Vehicle):
     """A class that represents a used car. It inherits from the Vehicle class.
@@ -204,10 +176,6 @@ class UsedVehicle(Vehicle):
         print("Condition: " + self.__condition)
         print("Number of Owners: " + str(self.__num_owners))
 
-    def get_vehicle_details_as_list(self):
-        """Returns the details of the car as a list."""
-        return super().get_vehicle_details_as_list() + [self.__mileage, self.__title, self.__condition, self.__num_owners]
-
 
 class Purchase:
     """A class that represents a purchase of a car.
@@ -263,46 +231,6 @@ class Purchase:
         """Sets the date of the purchase."""
         self.__date = date
 
-    # def print_purchase(self):
-    #     """Prints the details of the purchase."""
-    #     self.vehicle_obj.print_details()
-    #     print("Customer: " + self.customer_obj.get_name())
-    #     print("Date: " + self.__date)
-
-    def get_purchase_details_as_list(self):
-        """Returns the details of the purchase as a list."""
-        return self.vehicle_obj.get_vehicle_details_as_list() + [self.customer_obj.get_name(), self.__date]
-
-    @staticmethod
-    def get_purchase_history():
-        """Returns the purchase history."""
-        return Purchase.purchase_history
-
-    @staticmethod
-    def print_purchase_history():
-        """Prints the purchase history."""
-        print("Purchase History".center(55, "-"))
-        print()
-        for purchase in Purchase.purchase_history:
-            purchase.print_purchase()
-
-    @staticmethod
-    def search_purchases(criteria):
-        """Searches for purchases based on the criteria.
-        It takes the criteria as an argument.
-        It returns a list of purchases that match the criteria."""
-        matching_purchases = []
-        if criteria == "":
-            return matching_purchases
-        if criteria.isdigit():
-            criteria = int(criteria)
-        if str(criteria).replace(".", "", 1).isdigit():
-            criteria = float(criteria)
-        for purchase in Purchase.purchase_history:
-            if criteria in purchase.get_purchase_details_as_list():
-                matching_purchases.append(purchase)
-        return matching_purchases
-
 class Customer:
     """A class that represents the customer.
     It has attributes name, phone, email and customer_id.
@@ -351,45 +279,6 @@ class Customer:
         print(f"Name: {self.__name}")
         print(f"Phone: {self.__phone}")
         print(f"Email: {self.__email}")
-
-    def get_details_as_list(self): # needs to be fixed
-        """Returns the details of the customer as a list"""
-        return [self.__name, self.__customer_id, self.__phone, self.__email]
-
-    # @staticmethod
-    # def get_customer_list():
-    #     """Returns the list of customers"""
-    #     return Customer.customer_list
-
-    # @staticmethod
-    # def print_customer_list():
-    #     """Prints the list of customers"""
-    #     print("Customer List".center(45, "-"))
-    #     print()
-    #     for customer in Customer.customer_list:
-    #         customer.print_details()
-
-    @staticmethod
-    def print_numbered_customer_list_names_only():
-        """Prints the list of customers with their names and their corresponding numbers"""
-        if len(Customer.customer_list) == 0:
-            print("No customers found.")
-            return
-        print("Customer List".center(45, "-"))
-        print()
-        for i, customer in enumerate(Customer.customer_list):
-            print(f"{i + 1}. {customer.get_name()}")
-
-    @staticmethod
-    def search_customer(criteria):
-        """Searches for a customer in the customer_list.
-        It takes the criteria as an argument.
-        It appends the customer object to the list if the criteria matches the name, id, phone or email of the customer."""
-        search_results = []
-        for customer in Customer.customer_list:
-            if criteria in customer.get_details_as_list():
-                search_results.append(customer)
-        return search_results
 
 class User:
     """A class that represents a user. 
@@ -453,31 +342,9 @@ class User:
         """Sets the password of the user"""
         self.__password = password
 
-    def get_details_as_list(self):
-        """Returns the details of the user as a list (But not the password)"""
-        return [self.__name, self.__phone, self.__email]
-
-    
-
-    # needs to be fixed
-    # @staticmethod
-    # def search_user(criteria):
-    #     """Searches for a user in the users list.
-    #     It takes the criteria as an argument.
-    #     It appends the user object to the list if the criteria matches the name, username, phone or email of the user."""
-    #     search_results = []
-    #     for user in User.users:
-    #         if criteria in user.get_details_as_list():
-    #             search_results.append(user)
-    #     return search_results
-
 
 class Admin(User):
     """A class that represents an admin. 
     It has attributes name, phone, email, and password.
     Phone numbers should be of the format xxx-xxx-xxxx."""
-    
-    @staticmethod
-    def change_password(user, password):
-        """Changes the password of another user"""
-        user.set_password(password)
+
