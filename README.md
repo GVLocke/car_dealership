@@ -24,6 +24,7 @@ To keep the data safe and available, we need to save it permanently. That's why 
 
 ## Installation
 Dependencies: pymongo
+
 You also need to create a file called server_url.txt and put the url of your mongoDB server in it.
 
 You can install using `pip install -r requirements.txt`
