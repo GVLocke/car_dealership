@@ -43,6 +43,7 @@ def purchase_decoder(obj):
         obj['_id'] = ObjectId(obj['_id'])
     car_kwargs = obj.copy()
     car_kwargs.pop('_id', None)
+    car_kwargs.pop('car_id', None)
     return Purchase(**car_kwargs)
 
 def user_decoder(obj):
@@ -59,7 +60,7 @@ def admin_decoder(obj):
     car_kwargs.pop('_id', None)
     return Admin(**car_kwargs)
 
-def object_encoder(obj, car_details=None):
+def object_encoder(obj):
     if isinstance(obj, Vehicle):
         return {
             "vin": obj.get_vin(),
@@ -93,14 +94,10 @@ def object_encoder(obj, car_details=None):
             "email" : obj.get_email(),
         }
     elif isinstance(obj, Purchase):
-        dict = {
+        return {
             "vin" : obj.get_vin(),
-            "customer_id" : obj.get_customer_id(),
-            "date" : obj.get_date(),
+            "date" : obj.get_date()
         }
-        if car_details is not None:
-            dict.update(car_details)
-        return dict
     elif isinstance(obj, User):
         return {
             "username" : obj.get_username(),
@@ -131,7 +128,7 @@ def get_inventory():
             car_list.append(car_decoder(car))
     return car_list
 
-def insert_object(object, car_details=None):
+def insert_object(object):
     """Inserts an object into the database"""
     db = connect_to_mongo()
     if isinstance(object, Vehicle) or isinstance(object, UsedVehicle):
@@ -140,7 +137,13 @@ def insert_object(object, car_details=None):
         collection = db['customer']
     elif isinstance(object, Purchase):
         collection = db['purchase']
-        result = collection.insert_one(object_encoder(object, car_details))
+        result = collection.insert_one(object_encoder(object))
+        # update the purchase document with the car_id
+        db['purchase'].update_one({'_id': result.inserted_id}, {'$set': {'car_id': db['inventory'].find_one({'vin': object.get_vin()}).get('_id')}})
+        # update the purchase document with the customer_id
+        db['purchase'].update_one({'_id': result.inserted_id}, {'$set': {'customer_id': db['customer'].find_one({'_id': object.get_customer_id()}).get('_id')}})
+        # copy the car document to the sold-vehicles collection
+        db['sold-vehicles'].insert_one(db['inventory'].find_one({'vin': object.get_vin()}))
         # remove the sold car from the inventory
         db['inventory'].delete_one({'vin': object.get_vin()})
         return result.inserted_id
@@ -210,3 +213,158 @@ def get_customer_id(customer_name, customer_phone, customer_email):
     db = connect_to_mongo()
     customer = db['customer'].find_one({'name': customer_name, 'phone': customer_phone, 'email': customer_email})
     return customer['_id']
+
+def search_cars(search_critera):
+    """Searches the database for cars"""
+    db = connect_to_mongo()
+    car_list = []
+    for car in db['inventory'].find(search_critera):
+        if car.get('mileage') is not None:
+            car_list.append(UsedVehicle(used_car_decoder(car)))
+        else:
+            car_list.append(car_decoder(car))
+    return car_list
+
+def search_sold_cars(search_critera):
+    """Searches the database for cars"""
+    db = connect_to_mongo()
+    car_list = []
+    for car in db['sold-vehicles'].find(search_critera):
+        if car.get('mileage') is not None:
+            car_list.append(UsedVehicle(used_car_decoder(car)))
+        else:
+            car_list.append(car_decoder(car))
+    return car_list
+
+def search_users(search_critera):
+    """Searches the database for users"""
+    db = connect_to_mongo()
+    user_list = []
+    for user in db['user'].find(search_critera):
+        user_list.append(user_decoder(user))
+    for user in db['admin'].find(search_critera):
+        user_list.append(admin_decoder(user))
+    return user_list
+
+def search_customers(search_critera):
+    """Searches the database for customers"""
+    db = connect_to_mongo()
+    customer_list = []
+    for customer in db['customer'].find(search_critera):
+        customer_list.append(customer_decoder(customer))
+    return customer_list
+
+def search_purchases(search_critera):
+    """Searches the database for purchases"""
+    db = connect_to_mongo()
+    purchase_list = []
+    # if the search criteria is for a car
+    if 'make' in search_critera.keys() or 'model' in search_critera.keys() or 'year' in search_critera.keys() or 'mileage' in search_critera.keys() or 'price' in search_critera.keys() or 'color' in search_critera.keys() or 'transmission' in search_critera.keys() or 'engine' in search_critera.keys() or 'number_of_owners' in search_critera.keys() or 'vin' in search_critera.keys() or 'title' in search_critera.keys() or 'condition' in search_critera.keys():
+        for car in db['sold-vehicles'].find(search_critera):
+            # get the id of the car
+            car_id = car['_id']
+            # search for the purchase with the car id
+            for purchase in db['purchase'].find({'car_id': car_id}):
+                purchase_list.append(purchase_decoder(purchase))
+    # if the search criteria is for a customer
+    elif 'name' in search_critera.keys() or 'phone' in search_critera.keys() or 'email' in search_critera.keys():
+        # get the id of the customer
+        customer = db['customer'].find_one(search_critera)
+        customer_id = customer['_id']
+        # search for the purchase with the customer id
+        for purchase in db['purchase'].find({'customer_id': customer_id}):
+            purchase_list.append(purchase_decoder(purchase))
+    # if the search criteria is vin, customer_id, or date
+    else:
+        for purchase in db['purchase'].find(search_critera):
+            purchase_list.append(purchase_decoder(purchase))
+    return purchase_list
+
+def print_purchase(purchase):
+    """Prints the details of a purchase"""
+    db = connect_to_mongo()
+    result = db['purchase'].find_one({'vin': purchase.get_vin(), 'date': purchase.get_date()})
+    customer_id = result['customer_id']
+    customer = search_customers({'_id': customer_id})
+    car_id = result['car_id']
+    car = search_sold_cars({'_id': car_id})
+    print(f"-------{car[0].get_year()} {car[0].get_make()} {car[0].get_model()} purchased by {customer[0].get_name()} on {result['date']}-------")
+    print(f"VIN: {result['vin']}")
+    print(f"Price: ${car[0].get_price()}")
+    print(f"Customer ID: {customer_id}")
+    print(f"Customer Name: {customer[0].get_name()}")
+    print(f"Customer Phone: {customer[0].get_phone()}")
+    print(f"Customer Email: {customer[0].get_email()}")
+    print(f"Make: {car[0].get_make()}")
+    print(f"Model: {car[0].get_model()}")
+    print(f"Year: {car[0].get_year()}")
+    print(f"Color: {car[0].get_color()}")
+    print(f"Engine: {car[0].get_engine()}")
+    print(f"Transmission: {car[0].get_transmission()}")
+    if isinstance(car[0], UsedVehicle):
+        print(f"Mileage: {car[0].get_mileage()}")
+        print(f"Condition: {car[0].get_condition()}")
+        print(f"Title Status: {car[0].get_title()}")
+
+
+def change_password(user, password):
+    """Changes the password of a user"""
+    db = connect_to_mongo()
+    if isinstance(user, Admin):
+        db['admin'].update_one({'username': user.get_username()}, {'$set': {'password': password}})
+    else:
+        db['user'].update_one({'username': user.get_username()}, {'$set': {'password': password}})
+
+def create_user():
+        """Creates a new user"""
+        name = input("Enter name: ")
+        while 1:
+            phone_candidate = input("Enter phone number: ")
+            if len(phone_candidate) != 12 or phone_candidate[3] != "-" or phone_candidate[7] != "-":
+                print("Invalid phone number. Please enter in the format xxx-xxx-xxxx.")
+                continue
+            else:
+                phone = phone_candidate
+                break
+        while 1:
+            email_candidate = input("Enter email: ")
+            if email_candidate == "" or "@" not in email_candidate or "." not in email_candidate:
+                print("Invalid email.")
+                continue
+            else:
+                email = email_candidate
+                break
+        while 1:
+            username_candidate = input("Enter username: ")
+            # check if username already exists in users or admins collection
+            if search_users({'username': username_candidate}):
+                print("Username already exists.")
+                continue
+            else:
+                username = username_candidate
+                break
+        while 1:
+            password_candidate = input("Enter password: ")
+            if password_candidate == "":
+                print("Password cannot be empty.")
+                continue
+            elif len(password_candidate) < 8:
+                print("Password must be at least 8 characters.")
+                continue
+            else:
+                password_candidate_2 = input("Confirm password: ")
+                if password_candidate == "":
+                    print("Password cannot be empty.")
+                    continue
+                elif password_candidate != password_candidate_2:
+                    print("Passwords do not match.")
+                    continue
+                else:
+                    password = password_candidate
+                    break
+        user = User(name, phone, email, password, username)
+        try:
+            insert_object(user)
+            print("User created successfully.")
+        except:
+            print("Error creating user.")

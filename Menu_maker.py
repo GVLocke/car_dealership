@@ -272,10 +272,10 @@ while 1:
                     break
             else:
                 customer_selection = int(customer_selection_candidate)
-                customer_name = customer_list[customer_selection - 1].get_name()
-                customer_phone_number = customer_list[customer_selection - 1].get_phone()
-                customer_email = customer_list[customer_selection - 1].get_email()
-                customer_id = fn.get_customer_id(customer_name, customer_phone_number, customer_email)
+                name = customer_list[customer_selection - 1].get_name()
+                phone_number = customer_list[customer_selection - 1].get_phone()
+                email = customer_list[customer_selection - 1].get_email()
+                customer_id = fn.get_customer_id(name, phone_number, email)
                 break
         # get sale date, validate input
         while 1:
@@ -303,29 +303,10 @@ while 1:
             else:
                 sale_date = sale_date_candidate
                 break
-        # get the details of the car from the vin
-        for car in inventory:
-            if car.get_vin() == vin:
-                # create a dict of the car details
-                car_details = {
-                    "make": car.get_make(), 
-                    "model": car.get_model(), 
-                    "year": car.get_year(), 
-                    "color": car.get_color(),
-                    "transmission": car.get_transmission(),
-                    "engine": car.get_engine(),
-                    "price": car.get_price()
-                }
-                if isinstance(car, cd.UsedVehicle):
-                    car_details["mileage"] = car.get_mileage()
-                    car_details["title"] = car.get_title()
-                    car_details["condition"] = car.get_condition()
-                    car_details["num_owners"] = car.get_num_owners()
-                break
         # try to create a new sale
         try:
             purchase = cd.Purchase(vin, customer_id, sale_date)
-            fn.insert_object(purchase, car_details)
+            fn.insert_object(purchase)
             print("Sale recorded.")
             continue
         except ValueError as e:
@@ -350,37 +331,358 @@ while 1:
                     break
             # search for a car
             if search_selection == 1:
-                print("Search for a Car".center(50, "-"))
-                search_criteria = str(input("Enter search criteria: "))
-                if len(cd.Vehicle.search_inventory(search_criteria)) == 0:
-                    print("No cars found.")
-                    continue
-                else:
-                    for car in cd.Vehicle.search_inventory(search_criteria):
-                        car.print_details()
-                    continue
+                search_critera = {}
+                while 1:
+                    print("Search critera:")
+                    print("1. Year")
+                    print("2. Make")
+                    print("3. Model")
+                    print("4. Mileage")
+                    print("5. Price")
+                    print("6. Color")
+                    print("7. Transmission")
+                    print("8. Engine")
+                    print("9. Number of Owners")
+                    print("10. VIN")
+                    print("11. Title")
+                    print("12. Condition")
+                    print("0. Search")
+                    if len(search_critera) > 0:
+                        print("Current search critera:")
+                        for key, value in search_critera.items():
+                            print(f"{key}: {value}")
+                    choice = input("Enter a number to add to the search criteria or 0 to search with the current criteria: ")
+                    if choice == "0":
+                        break
+                    # get year validate input
+                    elif choice == "1":
+                        while 1:
+                                year = input("Enter a year: ")
+                                if year.isdigit():
+                                    search_critera.update({'year': int(year)})
+                                    break
+                                else:
+                                    print("Invalid input. Please enter a valid year")
+                    # get make validate input
+                    elif choice == "2":
+                        while 1:
+                            make = input("Enter a make: ")
+                            if make.isalpha():
+                                search_critera.update({'make': make})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid make")
+                    # get model validate input
+                    elif choice == "3":
+                        while 1:
+                            model = input("Enter a model: ")
+                            if model.isalpha():
+                                search_critera.update({'model': model})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid model")
+                    # get mileage validate input
+                    elif choice == "4":
+                        while 1:
+                            mileage = input("Enter a mileage: ")
+                            if mileage.isdigit():
+                                search_critera.update({'mileage': int(mileage)})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid mileage")
+                    # get price validate input
+                    elif choice == "5":
+                        while 1:
+                            price = input("Enter a price: ")
+                            if price.isdigit():
+                                search_critera.update({'price': int(price)})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid price")
+                    # get color validate input
+                    elif choice == "6":
+                        while 1:
+                            color = input("Enter a color: ")
+                            if color.isalpha():
+                                search_critera.update({'color': color})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid color")
+                    # get transmission validate input
+                    elif choice == "7":
+                        while 1:
+                            transmission = input("Enter a transmission: ")
+                            if transmission in ['Automatic', 'Manual', 'CVT', 'Hybrid', 'Electric']:
+                                search_critera.update({'transmission': transmission})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid transmission")
+                    # get engine validate input
+                    elif choice == "8":
+                        while 1:
+                            engine = input("Enter a engine: ")
+                            if engine.isalpha():
+                                search_critera.update({'engine': engine})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid engine")
+                    # get number of owners validate input
+                    elif choice == "9":
+                        while 1:
+                            owners = input("Enter a number of owners: ")
+                            if owners.isdigit():
+                                search_critera.update({'owners': int(owners)})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid number of owners")
+                    # get vin validate input
+                    elif choice == "10":
+                        while 1:
+                            vin = input("Enter a vin: ")
+                            if vin.isalnum() and len(vin) == 17:
+                                search_critera.update({'vin': vin})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid vin")
+                    # get title validate input
+                    elif choice == "11":
+                        while 1:
+                            title = input("Enter a title: ")
+                            if title in ['Clean', 'Salvage', 'Rebuilt']:
+                                search_critera.update({'title': title})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid title")
+                    # get condition validate input
+                    elif choice == "12":
+                        while 1:
+                            condition = input("Enter a condition: ")
+                            if condition in ['Excellent', 'Good', 'Fair', 'Poor']:
+                                search_critera.update({'condition': condition})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid condition")
+                    else:
+                        print("Invalid input. Please enter a valid number")
+                for car in fn.search_cars(search_critera):
+                    car.print_details()
             # search for a customer
             elif search_selection == 2:
                 print("Search for a Customer".center(50, "-"))
-                search_criteria = str(input("Enter search criteria: "))
-                if len(cd.Customer.search_customer(search_criteria)) == 0:
-                    print("No customers found.")
-                    continue
-                else:
-                    for customer in cd.Customer.search_customer(search_criteria):
-                        customer.print_details()
-                continue
+                search_critera = {}
+                while 1:
+                    print("Search Criteria:")
+                    print("1. Name")
+                    print("2. Phone")
+                    print("3. Email")
+                    print("0. Search")
+                    if len(search_critera) > 0:
+                        print("Current Search Criteria:")
+                        for key, value in search_critera.items():
+                            print(f"{key}: {value}")
+                    choice = input("Enter a number to add the search criteria, or enter 0 to search with the current critera: ")
+                    # get name, validate
+                    if choice == "1":
+                        while 1:
+                            name = input("Enter a name: ")
+                            if not name.isalpha():
+                                print("Invalid name")
+                            else:
+                                search_critera.update({'name': name})
+                                break
+                    # get phone, validate (must be xxx-xxx-xxxx)
+                    elif choice == "2":
+                        while 1:
+                            phone = input("Enter a phone number: ")
+                            if not phone[3] == "-" and phone[7] == "-":
+                                print("Invalid phone number")
+                            else:
+                                search_critera.update({'phone': phone})
+                                break
+                    # get email, validate
+                    elif choice == "3":
+                        while 1:
+                            email = input("Enter an email: ")
+                            if not "@" in email and "." in email:
+                                print("Invalid email")
+                            else:
+                                search_critera.update({'email': email})
+                                break
+                    # search
+                    elif choice == "0":
+                        break
+                if len(fn.search_customers(search_critera)) == 0:
+                    print("No customers found")
+                for customer in fn.search_customers(search_critera):
+                    customer.print_details()
             # search for a purchase
             elif search_selection == 3:
                 print("Search for a Purchase".center(50, "-"))
-                search_criteria = str(input("Enter search criteria: "))
-                if len(cd.Purchase.search_purchases(search_criteria)) == 0:
-                    print("No sales found.")
-                    continue
-                else:
-                    for sale in cd.Purchase.search_purchases(search_criteria):
-                        sale.print_purchase()
-                continue
+                search_critera = {}
+                while 1:
+                    print("Search critera:")
+                    print("1. Year")
+                    print("2. Make")
+                    print("3. Model")
+                    print("4. Mileage")
+                    print("5. Price")
+                    print("6. Color")
+                    print("7. Transmission")
+                    print("8. Engine")
+                    print("9. Number of Owners")
+                    print("10. VIN")
+                    print("11. Title")
+                    print("12. Condition")
+                    print("13. Customer Name")
+                    print("14. Customer Phone")
+                    print("15. Customer Email")
+                    print("0. Search")
+                    if len(search_critera) > 0:
+                        print("Current search critera:")
+                        for key, value in search_critera.items():
+                            print(f"{key}: {value}")
+                    choice = input("Enter a number to add to the search criteria or 0 to search with the current criteria: ")
+                    if choice == "0":
+                        break
+                    # get year validate input
+                    elif choice == "1":
+                        while 1:
+                                year = input("Enter a year: ")
+                                if year.isdigit():
+                                    search_critera.update({'year': int(year)})
+                                    break
+                                else:
+                                    print("Invalid input. Please enter a valid year")
+                    # get make validate input
+                    elif choice == "2":
+                        while 1:
+                            make = input("Enter a make: ")
+                            if make.isalpha():
+                                search_critera.update({'make': make})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid make")
+                    # get model validate input
+                    elif choice == "3":
+                        while 1:
+                            model = input("Enter a model: ")
+                            if model.isalpha():
+                                search_critera.update({'model': model})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid model")
+                    # get mileage validate input
+                    elif choice == "4":
+                        while 1:
+                            mileage = input("Enter a mileage: ")
+                            if mileage.isdigit():
+                                search_critera.update({'mileage': int(mileage)})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid mileage")
+                    # get price validate input
+                    elif choice == "5":
+                        while 1:
+                            price = input("Enter a price: ")
+                            if price.isdigit():
+                                search_critera.update({'price': int(price)})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid price")
+                    # get color validate input
+                    elif choice == "6":
+                        while 1:
+                            color = input("Enter a color: ")
+                            if color.isalpha():
+                                search_critera.update({'color': color})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid color")
+                    # get transmission validate input
+                    elif choice == "7":
+                        while 1:
+                            transmission = input("Enter a transmission: ")
+                            if transmission in ['Automatic', 'Manual', 'CVT', 'Hybrid', 'Electric']:
+                                search_critera.update({'transmission': transmission})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid transmission")
+                    # get engine validate input
+                    elif choice == "8":
+                        while 1:
+                            engine = input("Enter a engine: ")
+                            if engine.isalpha():
+                                search_critera.update({'engine': engine})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid engine")
+                    # get number of owners validate input
+                    elif choice == "9":
+                        while 1:
+                            owners = input("Enter a number of owners: ")
+                            if owners.isdigit():
+                                search_critera.update({'owners': int(owners)})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid number of owners")
+                    # get vin validate input
+                    elif choice == "10":
+                        while 1:
+                            vin = input("Enter a vin: ")
+                            if vin.isalnum() and len(vin) == 17:
+                                search_critera.update({'vin': vin})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid vin")
+                    # get title validate input
+                    elif choice == "11":
+                        while 1:
+                            title = input("Enter a title: ")
+                            if title in ['Clean', 'Salvage', 'Rebuilt']:
+                                search_critera.update({'title': title})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid title")
+                    # get condition validate input
+                    elif choice == "12":
+                        while 1:
+                            condition = input("Enter a condition: ")
+                            if condition in ['Excellent', 'Good', 'Fair', 'Poor']:
+                                search_critera.update({'condition': condition})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid condition")
+                    # get customer name validate input
+                    elif choice == "13":
+                        while 1:
+                            name = input("Enter a name: ")
+                            if name.isalpha():
+                                search_critera.update({'name': name})
+                                break
+                            else:
+                                print("Invalid input. Please enter a valid name")
+                    # get customer phone validate input
+                    elif choice == "14":
+                        while 1:
+                            phone = input("Enter a phone number: ")
+                            if not phone[3] == "-" and phone[7] == "-":
+                                print("Invalid phone number")
+                            else:
+                                search_critera.update({'phone': phone})
+                                break
+                    # get customer email validate input
+                    elif choice == "15":
+                        while 1:
+                            email = input("Enter an email: ")
+                            if not "@" in email and "." in email:
+                                print("Invalid email")
+                            else:
+                                search_critera.update({'email': email})
+                                break
+                    else:
+                        print("Invalid input. Please enter a valid number")
+                for purchase in fn.search_purchases(search_critera):
+                    fn.print_purchase(purchase)
             # exit
             elif search_selection == 4:
                 break
@@ -427,7 +729,8 @@ while 1:
                         break
                 # try to change password
                 try:
-                    current_user.set_password(new_password)
+                    # current_user.set_password(new_password)
+                    fn.change_password(current_user, new_password)
                     print("Password changed.")
                     break
                 except ValueError as e:
@@ -455,47 +758,38 @@ while 1:
             # add a new user
             if admin_settings_selection == 1:
                 print("Add a New User".center(50, "-"))
-                name = "user" + str(len(cd.User.users) + 1)
-                vars()[name] = cd.Admin.create_user()
-                print("User created.")
+                fn.create_user()
             # remove a user
             elif admin_settings_selection == 2:
                 print("Remove a User".center(50, "-"))
-                if len(users) == 0 or len(users) == 1 and users[0] == current_user:
+                user_list = fn.search_users({})
+                if user_list == [] or user_list == [current_user]:
                     print("No users found.")
                     continue
-                for i, user in enumerate(users):
-                    if not user == current_user:
+                for user in user_list:
+                    if not user.get_username() == current_user.get_username() or not user.get_password() == current_user.get_password():
                         print(f"{user.get_username()}")
-                while 1:
+                while True:
                     user_to_remove_candidate = str(input("Enter username to remove or type 0 to exit: "))
-                    # if user_to_remove_candidate not in users:
-                    #     print("Invalid input. Please enter a valid username.")
-                    #     continue
-                    # elif user_to_remove_candidate == "0":
-                    #     break
-                    # else:
-                    #     user_to_remove = user_to_remove_candidate
-                    #     break
                     if user_to_remove_candidate == "0":
                         break
                     else:
-                        for user in users:
+                        for user in user_list:
                             if user.get_username() == user_to_remove_candidate:
                                 user_to_remove = user
-                                break
-                        else:
+                                try:
+                                    query = {"username": user_to_remove.get_username(), "password": user_to_remove.get_password()}
+                                    db = fn.connect_to_mongo()
+                                    db['user'].delete_one(query)
+                                    print("User removed.")
+                                    break
+                                except ValueError as e:
+                                    print(e)
+                                    break
+                        else: # move continue here
                             print("Invalid input. Please enter a valid username.")
                             continue
                         break
-                # try to remove user
-                try:
-                    fn.remove_object("dealership.dat", user_to_remove)
-                    print("User removed.")
-                    continue
-                except ValueError as e:
-                    print(e)
-                    continue
             # exit
             elif admin_settings_selection == 3:
                 break

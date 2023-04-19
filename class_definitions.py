@@ -263,11 +263,11 @@ class Purchase:
         """Sets the date of the purchase."""
         self.__date = date
 
-    def print_purchase(self):
-        """Prints the details of the purchase."""
-        self.vehicle_obj.print_details()
-        print("Customer: " + self.customer_obj.get_name())
-        print("Date: " + self.__date)
+    # def print_purchase(self):
+    #     """Prints the details of the purchase."""
+    #     self.vehicle_obj.print_details()
+    #     print("Customer: " + self.customer_obj.get_name())
+    #     print("Date: " + self.__date)
 
     def get_purchase_details_as_list(self):
         """Returns the details of the purchase as a list."""
@@ -345,10 +345,10 @@ class Customer:
         """Returns the email of the customer as string"""
         return self.__email
 
-    def print_details(self): # needs to be fixed
+    def print_details(self):
         """Prints the details of the customer"""
+        print(f"{self.__name}".center(45, "-"))
         print(f"Name: {self.__name}")
-        print(f"ID: {self.__customer_id}")
         print(f"Phone: {self.__phone}")
         print(f"Email: {self.__email}")
 
@@ -481,45 +481,3 @@ class Admin(User):
     def change_password(user, password):
         """Changes the password of another user"""
         user.set_password(password)
-    
-    @staticmethod
-    def create_user():
-        """Creates a new user"""
-        name = input("Enter name: ")
-        while 1:
-            phone_candidate = input("Enter phone number: ")
-            if len(phone_candidate) != 12 or phone_candidate[3] != "-" or phone_candidate[7] != "-":
-                print("Invalid phone number. Please enter in the format xxx-xxx-xxxx.")
-                continue
-            else:
-                phone = phone_candidate
-                break
-        while 1:
-            email_candidate = input("Enter email: ")
-            if email_candidate == "" or "@" not in email_candidate or "." not in email_candidate:
-                print("Invalid email.")
-                continue
-            else:
-                email = email_candidate
-                break
-        while 1:
-            username_candidate = input("Enter username: ")
-            if username_candidate in [user.get_username() for user in User.users]:
-                print("Username already exists.")
-                continue
-            else:
-                username = username_candidate
-                break
-        while 1:
-            password_candidate = input("Enter password: ")
-            password_candidate_2 = input("Confirm password: ")
-            if password_candidate == "":
-                print("Password cannot be empty.")
-                continue
-            elif password_candidate != password_candidate_2:
-                print("Passwords do not match.")
-                continue
-            else:
-                password = password_candidate
-                break
-        return User(name, phone, email, password, username)
