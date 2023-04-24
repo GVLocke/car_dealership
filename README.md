@@ -9,16 +9,16 @@ Overall, this project seeks to provide an effective solution to a common problem
 
 ## Modules
 
-### User Login *(Status: Done)*
+### User Login
 The owners and employees of the dealership will login to the database using a username and password to keep the system secure. Admins will have privileged access to sensitive customer information. 
 
-### Menu *(Status: Done)*
+### Menu
 The main menu will allow users to access the functions of the program. The program will be a command-line interface.
 
-### Search *(Status: Done)*
+### Search
 One of the main functions of the program will be the ability to search the entire database based on particular filters like make/model/year, price range, etc. They will be able to search their current inventory as well as the sales history.
 
-### Database Implementation *(Status: Done)*
+### Database Implementation
 To keep the data safe and available, we need to save it permanently. That's why we must use a reliable and secure database system to store all the information recorded by users.
 
 
