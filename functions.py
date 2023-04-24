@@ -147,10 +147,10 @@ def insert_object(object):
         # remove the sold car from the inventory
         db['inventory'].delete_one({'vin': object.get_vin()})
         return result.inserted_id
-    elif isinstance(object, User):
-        collection = db['user']
     elif isinstance(object, Admin):
         collection = db['admin']
+    elif isinstance(object, User):
+        collection = db['user']
     else:
         raise TypeError(f"Object of type '{type(object)}' is not JSON serializable")
     result = collection.insert_one(object_encoder(object))
@@ -323,6 +323,9 @@ def create_user():
             if len(phone_candidate) != 12 or phone_candidate[3] != "-" or phone_candidate[7] != "-":
                 print("Invalid phone number. Please enter in the format xxx-xxx-xxxx.")
                 continue
+            elif not phone_candidate[0:2].isdigit() or not phone_candidate[4:6].isdigit() or not phone_candidate[8:11].isdigit():
+                print("Invalid phone number. Please enter in the format xxx-xxx-xxxx.")
+                continue
             else:
                 phone = phone_candidate
                 break
@@ -362,7 +365,19 @@ def create_user():
                 else:
                     password = password_candidate
                     break
-        user = User(name, phone, email, password, username)
+        # get the user type
+        while 1:
+            user_type_candidate = input("Enter user type (admin or user): ")
+            if user_type_candidate.lower() != "admin" and user_type_candidate.lower() != "user":
+                print("Invalid user type.")
+                continue
+            else:
+                user_type = user_type_candidate
+                break
+        if user_type.lower() == "admin":
+            user = Admin(name, phone, email, password, username)
+        else:
+            user = User(name, phone, email, password, username)
         try:
             insert_object(user)
             print("User created successfully.")

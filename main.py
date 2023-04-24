@@ -248,6 +248,9 @@ while 1:
                     if len(phone_number_candidate) != 12 or phone_number_candidate[3] != "-" or phone_number_candidate[7] != "-":
                         print("Invalid input. Please enter a phone number in the format XXX-XXX-XXXX.")
                         continue
+                    elif not phone_number_candidate.replace("-", "").isdigit():
+                        print("Invalid input. Please enter a phone number in the format XXX-XXX-XXXX.")
+                        continue
                     else:
                         phone_number = phone_number_candidate
                         break
@@ -464,7 +467,11 @@ while 1:
                                 print("Invalid input. Please enter a valid condition")
                     else:
                         print("Invalid input. Please enter a valid number")
-                for car in fn.search_cars(search_critera):
+                list = fn.search_cars(search_critera)
+                if len(list) == 0:
+                    print("No cars found matching search criteria")
+                    continue
+                for car in list:
                     car.print_details()
             # search for a customer
             elif search_selection == 2:
