@@ -21,7 +21,7 @@ The first function allows users to add cars to the current inventory and record 
 ## Record a Sale
 The second function allows users to record a sale of a car to a customer. Selling the car removes it from the inventory.
 
-### Search
+## Search
 The third function of the program will be the ability to search the entire database based on particular filters like make/model/year, price range, etc. They will be able to search their current inventory as well as the sales history. Users can also search for data on previous customers.
 
 ## User Menu
