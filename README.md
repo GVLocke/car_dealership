@@ -15,19 +15,19 @@ The owners and employees of the dealership will login to the database using a us
 ### Menu
 The main menu will allow users to access the functions of the program. The program will be a command-line interface.
 
-## Add a Car to Inventory
+### Add a Car to Inventory
 The first function allows users to add cars to the current inventory and record relevant metadata. The cars inputted are then pushed to the MongoDB database.
 
-## Record a Sale
+### Record a Sale
 The second function allows users to record a sale of a car to a customer. Selling the car removes it from the inventory.
 
-## Search
+### Search
 The third function of the program will be the ability to search the entire database based on particular filters like make/model/year, price range, etc. They will be able to search their current inventory as well as the sales history. Users can also search for data on previous customers.
 
-## User Menu
+### User Menu
 Users are able to change their own password.
 
-## Admin Menu
+### Admin Menu
 Admins are able to add new users/admins or remove existing ones.
 
 ### Database Implementation
